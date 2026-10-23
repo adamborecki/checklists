@@ -16,6 +16,7 @@
   emoji: "🧰",
   cat: "orff", aud: ["elementary", "preschool"], tags: ["orff", "instruments", "room setup"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Barred instruments are a five-figure investment. Most damage comes from storage, mallets, and things piled on top.",
   items: [
     { t: "Store barred instruments covered, away from heaters, sunny windows, and exterior doors.",
@@ -49,6 +50,7 @@
   emoji: "🎶",
   cat: "orff", aud: ["elementary"], tags: ["orff", "lesson planning", "improvisation", "general music"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Speech → body percussion → unpitched → barred instruments → create. Layer one part at a time.",
   items: [
     { t: "Start in speech or song. Children learn the text and rhythm by ear before touching an instrument." },
@@ -78,6 +80,7 @@
   emoji: "👂",
   cat: "orff", aud: ["elementary", "secondary", "college", "admin"], tags: ["hearing", "health", "self-care"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Your daily dose adds up across back-to-back classes. Measure it, then reduce it.",
   items: [
     { t: "Measure, don't guess. Run a sound level meter app during a typical class and a typical rehearsal.",
@@ -108,6 +111,7 @@
   emoji: "🍎",
   cat: "orff", aud: ["elementary"], tags: ["general music", "lesson planning", "first-year teacher"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "One clear goal, lots of music-making, a routine opening and closing, and a quick check for learning.",
   items: [
     { t: "Write one musical learning goal a visitor could observe (e.g., 'students keep a steady beat while singing')." },
@@ -142,6 +146,7 @@
   emoji: "🧸",
   cat: "early", aud: ["preschool"], tags: ["early childhood", "lesson planning", "movement", "families"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Active, playful, repetitive, short segments, and caregivers included where you can.",
   items: [
     { t: "Plan for active participation (singing, moving, playing), not just listening.",
@@ -179,6 +184,7 @@
   emoji: "🎈",
   cat: "early", aud: ["preschool", "elementary"], tags: ["early childhood", "singing", "repertoire"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Small range, mid tessitura, short repeated phrases, and texts worth singing.",
   items: [
     { t: "Check the range: is it small, and does it sit in the middle of children's voices rather than adult-pop keys?", src: ["flowers1990"] },
@@ -207,6 +213,7 @@
   emoji: "🫂",
   cat: "students", aud: ["elementary", "secondary", "college", "studio", "ta"], tags: ["crisis", "mental health", "first-year teacher", "relationships"],
   evidence: "standard",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Calm, private-but-visible, listen first, and know when a conversation becomes a referral or a report.",
   items: [
     { t: "Stay calm. Lower your voice, slow down, and get to eye level.", src: ["nctsnPfa"] },
@@ -250,6 +257,7 @@
   emoji: "😰",
   cat: "students", aud: ["secondary", "college", "studio", "ta"], tags: ["mental health", "performance", "juries"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Normalize it, prepare thoroughly, practice performing, and refer when it's more than nerves.",
   items: [
     { t: "Normalize it. Many skilled performers feel it, and some arousal can help.", src: ["kenny2011"] },
@@ -278,6 +286,7 @@
   emoji: "🚪",
   cat: "students", aud: ["secondary", "studio", "elementary", "college"], tags: ["motivation", "retention", "families"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Find out which need is going unmet (competence, connection, or choice) before you try to talk them out of it.",
   items: [
     { t: "Listen first. Ask what changed and when it started feeling different." },
@@ -306,6 +315,7 @@
   emoji: "🎤",
   cat: "students", aud: ["secondary"], tags: ["choir", "voice", "middle school"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Voice change is normal, ongoing, and happens to everyone. Assign parts by range, not labels.",
   items: [
     { t: "Expect voice change in all students, not just boys." },
@@ -334,6 +344,7 @@
   emoji: "🏫",
   cat: "classroom", aud: ["elementary", "secondary"], tags: ["classroom management", "first-year teacher", "routines"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Teach routines like you teach music: model, practice, feedback, repeat. And make music on day one.",
   items: [
     { t: "Write 3–5 positively stated expectations and post them.", src: ["simonsen2008"] },
@@ -363,6 +374,7 @@
   emoji: "🧩",
   cat: "classroom", aud: ["elementary", "secondary", "preschool"], tags: ["inclusion", "special education", "law", "equity"],
   evidence: "standard",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Accommodations apply in music, too. Read the plan, ask questions, and design for everyone.",
   items: [
     { t: "Get and read the IEP or 504 plan. Accommodations apply in your class, too.", src: ["idea", "sec504"] },
@@ -391,6 +403,7 @@
   emoji: "📋",
   cat: "classroom", aud: ["elementary", "secondary"], tags: ["substitutes", "planning", "first-year teacher"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Assume the sub can't read music and shouldn't touch the instruments. Plan accordingly.",
   items: [
     { t: "Assume the sub is not a musician. Plans must work without reading music or playing piano." },

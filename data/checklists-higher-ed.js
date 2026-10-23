@@ -11,6 +11,7 @@
   emoji: "📝",
   cat: "higher", aud: ["ta", "college"], tags: ["TA", "FERPA", "Title IX", "active learning", "boundaries"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Know the rules (FERPA, Title IX, accommodations), teach actively, and protect your own degree.",
   items: [
     { t: "Get the syllabus, the grading policy, and what decisions are yours vs. the instructor of record's." },
@@ -41,6 +42,7 @@
   emoji: "✉️",
   cat: "higher", aud: ["college", "studio", "secondary", "admin", "ta"], tags: ["letters", "bias", "writing", "careers"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Specific, comparative, achievement-focused, and audited for gendered language.",
   items: [
     { t: "Ask what it's for, the deadline, and how to submit. Get a CV or résumé and a short list of highlights." },
@@ -71,6 +73,7 @@
   emoji: "🪑",
   cat: "leadership", aud: ["admin", "college"], tags: ["department chair", "leadership", "accreditation", "governance"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Listen before you change things. Learn the money, the calendar, accreditation, and the people.",
   items: [
     { t: "Meet one-on-one with every faculty and staff member. Ask what's working, what's broken, and what they need." },
@@ -104,6 +107,7 @@
   emoji: "🔎",
   cat: "leadership", aud: ["admin", "college"], tags: ["hiring", "search committee", "bias", "interviews"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Criteria first, structured interviews, real work samples, independent scoring, then discussion.",
   items: [
     { t: "Write the criteria and how you'll weigh them before reading any applications." },
@@ -137,6 +141,7 @@
   emoji: "📈",
   cat: "leadership", aud: ["admin", "college"], tags: ["evaluation", "tenure", "bias", "student evaluations"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Never rely on student evaluations alone. Use multiple measures and written criteria.",
   items: [
     { t: "Don't use student evaluation scores as the main measure of teaching quality.",
@@ -162,6 +167,7 @@
   emoji: "⏰",
   cat: "leadership", aud: ["admin", "college", "secondary", "elementary"], tags: ["meetings", "leadership"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Purpose, agenda, short, decisions recorded, and snacks if it's near a meal.",
   items: [
     { t: "Ask whether this could be an email. Cancel if so." },
@@ -187,6 +193,7 @@
   emoji: "🗺️",
   cat: "leadership", aud: ["admin", "college"], tags: ["area director", "choral", "vocal", "scheduling", "studio assignments"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Coordinate the calendar, make studio assignments transparent, and keep students healthy and fairly judged.",
   items: [
     { t: "Build one area calendar: ensembles, juries, recitals, auditions, studio classes, and conflicts." },
@@ -219,6 +226,7 @@
   emoji: "🏛️",
   cat: "leadership", aud: ["admin"], tags: ["dean", "provost", "president", "budget", "facilities", "accreditation"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Show up, learn what's different about music (one-on-one teaching, facilities, health), and advocate honestly.",
   items: [
     { t: "Attend a rehearsal, not just a gala concert." },

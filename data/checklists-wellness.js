@@ -11,6 +11,7 @@
   emoji: "🩹",
   cat: "health", aud: ["secondary", "college", "studio", "ta"], tags: ["health", "injury", "practice", "NASM"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Pain while playing is common, but it isn't normal. Ramp up gradually, take breaks, fix the setup, and refer early.",
   items: [
     { t: "Teach that pain is a signal, not a rite of passage. 'No pain, no gain' doesn't apply to tendons.",
@@ -41,6 +42,7 @@
   emoji: "🌿",
   cat: "health", aud: ["secondary", "college", "studio", "ta"], tags: ["health", "wellness", "sleep", "mental health", "NASM"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Sleep, food, movement, friends, and help that's actually visible. Health is part of the training, not a distraction from it.",
   items: [
     { t: "Protect sleep in your own scheduling: no routine late-night rehearsals, and no 'all-nighter before the jury' culture.",
@@ -77,6 +79,7 @@
   emoji: "🧘",
   cat: "health", aud: ["preschool", "elementary", "secondary", "college", "studio", "ta", "admin"], tags: ["self-care", "burnout", "wellness", "sleep", "boundaries"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Not bubble baths. Sleep, food, movement, boundaries, your ears and voice, and other people.",
   items: [
     { t: "Know it isn't just you. Teachers report frequent job-related stress and burnout more often than similar working adults.", src: ["rand2025"] },
@@ -113,6 +116,7 @@
   emoji: "🌡️",
   cat: "health", aud: ["secondary", "college", "admin"], tags: ["marching band", "heat", "safety", "band camp", "health"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Band camp is in August. Exertional heat stroke is preventable, and survivable when you plan, acclimatize, and cool first.",
   items: [
     { t: "Write a heat policy with your athletic trainer before band camp, based on wet-bulb globe temperature (WBGT), not air temperature alone.",
@@ -146,6 +150,7 @@
   emoji: "🕯️",
   cat: "students", aud: ["elementary", "secondary", "college", "studio", "ta"], tags: ["grief", "crisis", "mental health", "relationships"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Say something. Keep it short, keep showing up, and let music be a place to feel, not just perform.",
   items: [
     { t: "Acknowledge the loss. Saying nothing can feel to a student like you don't care, or that the topic is off limits.", src: ["grieving"] },
@@ -177,6 +182,7 @@
   emoji: "🔒",
   cat: "students", aud: ["secondary", "college", "studio", "ta", "admin"], tags: ["safety", "stalking", "crisis", "privacy", "concerts", "Title IX"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Take it seriously, bring in the right people today, and look hard at the places music makes students easy to find: concerts, programs, posts, and pickup.",
   items: [
     { t: "Believe the student and take it seriously. Stalking is a pattern of behavior that causes fear, and that fear is the point.",
@@ -221,6 +227,7 @@
   emoji: "📸",
   cat: "legal", aud: ["preschool", "elementary", "secondary", "college", "studio", "admin"], tags: ["privacy", "FERPA", "social media", "livestream", "safety"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Programs, livestreams, and social posts can tell strangers exactly where a child will be. Know the opt-outs and make a plan.",
   items: [
     { t: "Learn your school's FERPA directory-information policy and which families opted out.",
@@ -252,6 +259,7 @@
   emoji: "🎉",
   cat: "classroom", aud: ["preschool", "elementary", "secondary", "college", "studio", "ta"], tags: ["praise", "motivation", "celebrations", "relationships"],
   evidence: "research",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Be specific, praise the process, be sincere, and let students own the win.",
   items: [
     { t: "Be specific: name what they did ('Your phrasing in bar 12 finally breathed').", src: ["henderlong2002", "madsen1968"] },

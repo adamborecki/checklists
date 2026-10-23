@@ -17,7 +17,7 @@ window.MTC_EMOJI = {
 
   // Navigation, sections, and evidence labels (shown at "Plenty" and up).
   ui: {
-    list: "📋", categories: "🗂️", tags: "🏷️", about: "🤖", settings: "🎛️",
+    list: "📋", categories: "🗂️", tags: "🏷️", about: "🤖", history: "📜", settings: "🎛️",
     why: "💡", sources: "📚", review: "🔍", checklist: "✅", print: "🖨️",
     expand: "👀", reset: "🔄", search: "🔎", done: "🎉", copy: "📋", export: "💾"
   },

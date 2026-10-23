@@ -158,9 +158,6 @@ main { padding-top: 20px; padding-bottom: 40px; outline: none; }
 .meter-big .meter-label { font-weight: 600; color: var(--ink); }
 .meter-big .meter-bar { height: 14px; }
 .meter-ends { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); margin-top: 5px; }
-.meter-mini { width: 92px; flex: none; text-align: right; }
-.meter-mini .meter-num { font-size: .78rem; font-weight: 700; color: var(--c); display: block; margin-bottom: 3px; white-space: nowrap; }
-.meter-mini .meter-bar { height: 6px; }
 
 /* ---------- Banner ---------- */
 .intro { margin-bottom: 6px; }
@@ -202,7 +199,6 @@ select { padding: 8px 10px; border: 1px solid var(--line-strong); border-radius:
 .card:hover { border-color: var(--line-strong); }
 .card h3 { margin: 0 0 4px; font-size: 1.08rem; color: var(--ink); }
 .card p { margin: 0 0 10px; color: var(--ink-2); font-size: .9rem; }
-.card .meter-mini { width: 100%; text-align: left; }
 .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---------- Checklist page ---------- */
@@ -274,9 +270,6 @@ details.section .sec-body { padding: 0 16px 14px; }
 @media (max-width: 560px) {
   .site-header { position: static; }
   .cl-row { flex-direction: column; align-items: stretch; gap: 8px; }
-  .meter-mini { width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; }
-  .meter-mini .meter-num { margin: 0; }
-  .meter-mini .meter-bar { flex: 1; }
   .item-more { margin-left: 0; }
   .brand-text { font-size: 1rem; }
   .header-inner { position: relative; }
@@ -295,3 +288,29 @@ details.section .sec-body { padding: 0 16px 14px; }
   a { color: #000; }
   .cite { background: none; }
 }
+
+/* ---------- Quiet slop tag (lists, checklist header) ---------- */
+.slop-tag { --c: var(--slop-5); color: var(--muted); font-size: .78rem; white-space: nowrap; }
+.slop-tag::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--c); margin-right: 5px; vertical-align: 1px; opacity: .8; }
+.slop-tag.s5 { --c: var(--slop-5); } .slop-tag.s4 { --c: var(--slop-4); } .slop-tag.s3 { --c: var(--slop-3); }
+.slop-tag.s2 { --c: var(--slop-2); } .slop-tag.s1 { --c: var(--slop-1); }
+.slop-line { margin: 2px 0 0; }
+.slop-jump { text-decoration: none; }
+.slop-jump:hover .slop-tag { color: var(--ink-2); text-decoration: underline; }
+.score-table td:nth-child(2), .score-table th:nth-child(2) { text-align: right; white-space: nowrap; }
+
+/* ---------- History ---------- */
+.history { list-style: none; padding: 0; margin: 18px 0 0; border-left: 2px solid var(--line-strong); }
+.h-entry { position: relative; padding: 0 0 22px 22px; scroll-margin-top: 76px; }
+.h-entry:target, .h-entry:focus-within { outline: none; }
+.h-head { display: flex; gap: 10px; align-items: flex-start; margin-left: -36px; }
+.h-num { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: .8rem; font-weight: 700; margin-top: 2px; }
+.h-title { font-size: 1.15rem; margin: 0; }
+.h-title a { color: var(--ink); text-decoration: none; }
+.h-title a:hover { text-decoration: underline; }
+.h-meta { margin: 2px 0 6px; font-size: .84rem; color: var(--muted); }
+.h-full { margin: 6px 0; }
+.h-full > summary { cursor: pointer; color: var(--link); font-size: .92rem; }
+.h-prompt { margin: 8px 0; padding: 10px 14px; background: var(--surface-2); border-left: 3px solid var(--line-strong); border-radius: 0 8px 8px 0; white-space: pre-wrap; font-size: .92rem; color: var(--ink-2); }
+.h-q { margin: 10px 0 0; font-size: .9rem; }
+.h-links code { font-size: .85em; }

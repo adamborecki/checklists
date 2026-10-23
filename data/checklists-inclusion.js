@@ -12,6 +12,7 @@
   emoji: "♾️",
   cat: "classroom", aud: ["preschool", "elementary", "secondary", "college", "studio", "ta"], tags: ["autism", "inclusion", "special education", "sensory", "hearing"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Ask, don't assume. Make the room predictable, plan for sound, and build on strengths. \"Slightly\" rarely tells you what someone needs.",
   items: [
     { t: "Drop 'slightly' and 'mild.' Support needs change with the day and the setting. A student who seems fine in class may be exhausted from holding it together.",
@@ -57,6 +58,7 @@
   emoji: "🎧",
   cat: "concerts", aud: ["preschool", "elementary", "secondary", "college", "studio", "admin"], tags: ["concerts", "autism", "accessibility", "inclusion", "sensory"],
   evidence: "practice",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Shorter, softer, house lights partly up, freedom to move, a quiet room, and a story so people know what to expect.",
   items: [
     { t: "Decide who it's for (autistic audience members, young children, people with sensory or anxiety needs), and ask them or their families what would help." },
@@ -87,6 +89,7 @@
   emoji: "🔤",
   cat: "multilingual", aud: ["preschool", "elementary", "secondary", "studio"], tags: ["English learners", "ESL", "inclusion", "language", "equity"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Music is a great place to learn in a new language, if you show more than you tell and match your language to each student's level.",
   items: [
     { t: "Find out each student's English proficiency level and home language(s). Ask the EL or ESL teacher.",
@@ -128,6 +131,7 @@
   emoji: "🧳",
   cat: "multilingual", aud: ["preschool", "elementary", "secondary"], tags: ["English learners", "newcomers", "first day", "inclusion"],
   evidence: "practice",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Welcome first. Their name, a buddy, routines they can see, and music they can join on day one.",
   items: [
     { t: "Get the basics: home language, how to say their name, any prior music experience, and the EL teacher's name." },
@@ -157,6 +161,7 @@
   emoji: "🌐",
   cat: "multilingual", aud: ["preschool", "elementary", "secondary", "studio", "admin"], tags: ["parents", "communication", "translation", "English learners", "equity"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Translate what matters, use real interpreters, and don't make kids do it.",
   items: [
     { t: "Find out each family's preferred language for writing and for talking. Registration data may be out of date." },
@@ -186,6 +191,7 @@
   emoji: "✈️",
   cat: "multilingual", aud: ["college", "ta", "studio", "admin"], tags: ["international students", "college", "belonging", "language"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Spell out the unwritten rules, check understanding, and know what's different about their visa, money, and distance from home.",
   items: [
     { t: "Tell them the first semester is hard for almost everyone, and that it gets better.",

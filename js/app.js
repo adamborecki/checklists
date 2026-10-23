@@ -1,4 +1,4 @@
-/* Music Teacher Checklists: a static, hash-routed app. No build step. */
+/* Adam and Billy's Checklists (for music teachers): a static, hash-routed app. No build step. */
 (function () {
   "use strict";
 
@@ -8,6 +8,9 @@
   const SOURCES = window.MTC_SOURCES || {};
   const EMO = window.MTC_EMOJI || { levels: [{ id: "none", name: "None" }], defaultLevel: "none", ui: {}, evidence: {}, slop: {}, keywords: [], fallback: [], sparkle: [], confetti: [] };
   const CHECKLISTS = (window.MTC_CHECKLISTS || []).slice();
+  const HISTORY = window.MTC_HISTORY || [];
+  const SITE = "Adam and Billy's Checklists";
+  const REPO = "https://github.com/adamborecki/checklists";
   const catById = Object.fromEntries(CATS.map(c => [c.id, c]));
   const audById = Object.fromEntries(AUDS.map(a => [a.id, a]));
   const clById = Object.fromEntries(CHECKLISTS.map(c => [c.id, c]));
@@ -57,8 +60,14 @@
   function sparkle(i, after) { return lvl() >= 4 && EMO.sparkle.length ? em(4, EMO.sparkle[i % EMO.sparkle.length], after) : ""; }
 
   /* ---------------- Review + slop math ---------------- */
-  // Weights add to 100. Slop = 100 − human-checked points.
+  // Weights add to 100. Slop = 100 − checked points.
+  // Humans earn full points. AI checks earn partial credit on the source checks only:
+  // an AI that confirmed a link resolves earns half the link points; an AI that matched
+  // claims to the sources earns a quarter of the claim points (half after an independent
+  // second AI check). So a cheap, unchecked AI draft is 100% slop, while a draft whose
+  // sources were verified and claims matched starts at 85%.
   const W = { read: 15, edited: 20, expert: 20, links: 15, claims: 30 };
+  const AI_CREDIT = { links: 0.5, claims: { none: 0, drafter: 0.25, "second-check": 0.5 } };
   const STEPS = [
     { key: "read",   pts: W.read,   label: "A human read the whole checklist, rationale and all." },
     { key: "edited", pts: W.edited, label: "A human fixed anything wrong, vague, or generic (or confirmed nothing needed fixing)." },
@@ -93,26 +102,32 @@
     r.date = today();
     save();
   }
+  function aiOf(cl) {
+    const a = cl.ai || {};
+    return { links: a.links ? AI_CREDIT.links : 0, claims: AI_CREDIT.claims[a.claims] || 0 };
+  }
+  function hasHuman(cl) {
+    const r = review(cl.id), keys = (cl.sources || []).map(s => s.k);
+    return !!(r.read || r.edited || r.expert || keys.some(linkChecked) || keys.some(k => r.claims[k]));
+  }
   function slopOf(cl) {
-    const r = review(cl.id);
-    let human = (r.read ? W.read : 0) + (r.edited ? W.edited : 0) + (r.expert ? W.expert : 0);
+    const r = review(cl.id), ai = aiOf(cl);
+    let pts = (r.read ? W.read : 0) + (r.edited ? W.edited : 0) + (r.expert ? W.expert : 0);
     const keys = (cl.sources || []).map(s => s.k);
     if (keys.length) {
-      human += W.links * keys.filter(linkChecked).length / keys.length;
-      human += W.claims * keys.filter(k => r.claims[k]).length / keys.length;
+      pts += W.links * keys.reduce((a, k) => a + (linkChecked(k) ? 1 : ai.links), 0) / keys.length;
+      pts += W.claims * keys.reduce((a, k) => a + (r.claims[k] ? 1 : ai.claims), 0) / keys.length;
     } else {
-      human += r.edited ? W.links + W.claims : 0;
+      pts += r.edited ? W.links + W.claims : 0;
     }
-    return Math.max(0, Math.round(100 - human));
+    return Math.max(0, Math.round(100 - pts));
   }
   function slopLevel(s) { return s >= 90 ? 5 : s >= 65 ? 4 : s >= 35 ? 3 : s >= 10 ? 2 : 1; }
-  const LABELS = {
-    5: "Pure AI slop: unreviewed first draft",
-    4: "Mostly slop: a human has started",
-    3: "Half-baked: partly human-checked",
-    2: "Mostly human: nearly verified",
-    1: "Human-verified"
-  };
+  function slopLabel(cl) {
+    const s = slopOf(cl);
+    if (!hasHuman(cl)) return s < 100 ? "AI-checked draft, no human review yet" : "Raw AI draft, unchecked";
+    return s >= 65 ? "A human has started checking" : s >= 35 ? "Partly human-checked" : s >= 10 ? "Mostly human-checked" : "Human-verified";
+  }
   function siteSlop() {
     if (!CHECKLISTS.length) return 100;
     return Math.round(CHECKLISTS.reduce((a, c) => a + slopOf(c), 0) / CHECKLISTS.length);
@@ -154,23 +169,22 @@
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
   }
 
-  function meterBig(s, title) {
+  function meterBig(s, title, label) {
     const lv = slopLevel(s);
     return `<div class="meter meter-big s${lv}" style="--pct:${s}%">
       <div class="meter-head">
         <span class="meter-title">${esc(title || "AI slop meter")}</span>
-        <span><span class="meter-num">${s}%</span> <span class="meter-label">${slopEmo(lv)}${LABELS[lv]}</span></span>
+        <span><span class="meter-num">${s}%</span> <span class="meter-label">${slopEmo(lv)}${esc(label || "")}</span></span>
       </div>
       <div class="meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${s}" aria-label="AI slop ${s} percent"><div class="meter-fill"></div></div>
       <div class="meter-ends"><span>0% · human-verified</span><span>100% · raw AI draft</span></div>
     </div>`;
   }
-  function meterMini(s) {
-    const lv = slopLevel(s);
-    return `<div class="meter meter-mini s${lv}" style="--pct:${s}%" title="${esc(LABELS[lv])}">
-      <span class="meter-num">${s}% slop</span>
-      <div class="meter-bar"><div class="meter-fill"></div></div>
-    </div>`;
+  // A quiet one-line tag for lists: "AI-checked · 85% slop".
+  function slopTag(cl) {
+    const s = slopOf(cl), lv = slopLevel(s);
+    const who = hasHuman(cl) ? (s < 10 ? "Human-verified" : "Human-checked") : (s < 100 ? "AI-checked" : "AI draft");
+    return `<span class="slop-tag s${lv}" title="${esc(slopLabel(cl))}">${esc(who)} · ${s}% slop</span>`;
   }
   function slopEmo(lv) {
     const e = EMO.slop[lv]; if (!e || lvl() < 3) return "";
@@ -191,6 +205,7 @@
     else if (view === "tags") { renderTags(); nav = "tags"; }
     else if (view === "tag") { filters.tag = arg; filters.cat = ""; filters.fromRoute = true; renderList(); nav = "tags"; }
     else if (view === "about") { renderAbout(); nav = "about"; }
+    else if (view === "history") { renderHistory(arg); nav = "history"; }
     else {
       // A category/tag picked by URL is cleared when going back to the plain list.
       if (filters.fromRoute) { filters.cat = ""; filters.tag = ""; filters.fromRoute = false; }
@@ -199,7 +214,7 @@
     document.querySelectorAll("[data-nav]").forEach(a => {
       if (a.dataset.nav === nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
-    if (keepScroll !== true) window.scrollTo(0, 0);
+    if (keepScroll !== true && !(view === "history" && arg)) window.scrollTo(0, 0);
   }
   window.addEventListener("hashchange", () => route());
 
@@ -207,15 +222,12 @@
   const filters = { q: "", cat: "", aud: "", tag: "", sort: "cat", fromRoute: false };
 
   function renderList() {
-    const s = siteSlop();
-    document.title = "Music Teacher Checklists";
+    document.title = SITE;
     main.innerHTML = `
       <section class="intro">
-        <h1>${sparkle(0)}Checklists for music teachers${em(4, "🎶", true)}</h1>
-        <p>From Orff instruments and choosing repertoire to crying students, English learners, NASM site visits, and the dean's office.
-        Each checklist explains its reasoning and links real sources. An AI drafted all of it, so each one carries a slop meter showing how much a human has checked it.</p>
+        <h1>${sparkle(0)}Adam and Billy's checklists${em(4, "🎶", true)}</h1>
+        <p>Checklists for music teachers, with the reasons and the research behind them.</p>
       </section>
-      ${meterBig(s, "Whole-site slop meter")}
       <div class="filters" role="search">
         <div class="filter-row">
           <label class="visually-hidden" for="q">Search checklists</label>
@@ -294,28 +306,26 @@
             <span class="ev ev-${cl.evidence}">${evHtml(cl.evidence)}</span>
             <span class="progress-pill${d === n ? " is-done" : ""}">${d === n ? `${em(2, EMO.ui.done)}Done` : d ? `${d}/${n} done` : `${n} items`}</span>
             <span>${em(4, EMO.ui.sources)}${(cl.sources || []).length} sources</span>
+            ${slopTag(cl)}
           </div>
         </div>
-        ${meterMini(slopOf(cl))}
       </a></li>`;
     }).join("");
   }
 
   /* ---------------- Categories & tags ---------------- */
   function renderCategories() {
-    document.title = "Categories · Music Teacher Checklists";
+    document.title = `Categories · ${SITE}`;
     main.innerHTML = `<h1>${em(3, EMO.ui.categories)}Categories</h1>
       <div class="grid">${CATS.map(c => {
         const cls = CHECKLISTS.filter(x => x.cat === c.id);
-        const s = cls.length ? Math.round(cls.reduce((a, x) => a + slopOf(x), 0) / cls.length) : 100;
         return `<a class="card" href="#/category/${c.id}">
           <h3>${catHtml(c, 1)}${em(4, "✨", true)}</h3><p>${esc(c.blurb)}</p>
-          <p class="small muted">${cls.length} checklist${cls.length === 1 ? "" : "s"}</p>
-          ${meterMini(s)}</a>`;
+          <p class="small muted">${cls.length} checklist${cls.length === 1 ? "" : "s"}</p></a>`;
       }).join("")}</div>`;
   }
   function renderTags() {
-    document.title = "Tags · Music Teacher Checklists";
+    document.title = `Tags · ${SITE}`;
     main.innerHTML = `<h1>${em(3, EMO.ui.tags)}Tags</h1>
       <h2>Who it's for</h2>
       <div class="tag-cloud">${AUDS.map(a => {
@@ -329,7 +339,7 @@
 
   /* ---------------- Checklist view ---------------- */
   function renderChecklist(cl) {
-    document.title = `${cl.title} · Music Teacher Checklists`;
+    document.title = `${cl.title} · ${SITE}`;
     const cat = catById[cl.cat] || { name: cl.cat };
     const srcIndex = Object.fromEntries((cl.sources || []).map((s, i) => [s.k, i + 1]));
     const checks = checksFor(cl.id);
@@ -345,7 +355,7 @@
         <span class="small muted">For: ${(cl.aud || []).length >= AUDS.length ? `${em(4, "🌈")}everyone` : (cl.aud || []).map(a => em(3, (audById[a] || {}).emoji) + esc((audById[a] || {}).name || a)).join(" · ")}</span>
       </div>
       <div class="meta-line">${(cl.tags || []).map(t => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">${lvl() >= 4 ? em(4, itemEmoji(t, 0) || "🏷️") : "#"}${esc(t)}</a>`).join("")}</div>
-      <div id="meterSlot">${meterBig(slopOf(cl))}</div>
+      <p class="slop-line"><button type="button" class="linklike slop-jump" id="slopJump"></button></p>
 
       <div class="toolbar">
         <h2 id="items-h">${em(3, EMO.ui.checklist)}Checklist <span class="small muted" id="prog-txt"></span></h2>
@@ -380,7 +390,7 @@
       <details class="section" id="sec-src">
         <summary><span>${em(3, EMO.ui.sources)}Sources (${(cl.sources || []).length})</span> <span class="sum-note">${(cl.sources || []).filter(s => linkChecked(s.k)).length} human-opened</span></summary>
         <div class="sec-body">
-          <p class="ai-note">An AI resolved each DOI and URL when drafting (Oct 2026), which confirms the source exists. It did not confirm the source says what we claim. That's the human check below each source.</p>
+          <p class="ai-note"><strong>AI checks so far:</strong> ${esc((cl.ai && cl.ai.note) || "None recorded. Treat these sources as unverified.")} A person still needs to confirm each source says what we claim. That's the check below each source.</p>
           <ol class="sources">${(cl.sources || []).map((s, i) => {
             const src = SOURCES[s.k] || { cite: `Missing source: ${s.k}`, url: "" };
             return `<li id="src-${s.k}">
@@ -397,9 +407,10 @@
       </details>
 
       <details class="section review-section" id="sec-review">
-        <summary><span>${em(3, EMO.ui.review)}Human review (lower the slop)</span> <span class="sum-note" id="rev-note"></span></summary>
+        <summary><span>${em(3, EMO.ui.review)}Review & AI slop meter</span> <span class="sum-note" id="rev-note"></span></summary>
         <div class="sec-body">
-          <p class="small muted">Tick what a real person has done. Source checks above count too. Reviews are saved in this browser. Use "Copy for repo" to make them permanent for everyone.</p>
+          <div id="meterSlot"></div>
+          <p class="small muted">Tick what a real person has done. Source checks above count too. Reviews are saved in this browser. Use "Copy review for repo" to make them permanent for everyone. <a href="#/about">How the meter works</a></p>
           <ul class="review-steps">${STEPS.map(st => `<li><label>
             <input type="checkbox" data-step="${st.key}" ${r[st.key] ? "checked" : ""}>
             <span>${esc(st.label)} <span class="pts">−${st.pts} slop</span></span></label></li>`).join("")}
@@ -423,13 +434,14 @@
     let lastSlop = slopOf(cl);
     const updateMeter = () => {
       const s = slopOf(cl);
-      main.querySelector("#meterSlot").innerHTML = meterBig(s);
+      main.querySelector("#meterSlot").innerHTML = meterBig(s, "AI slop meter", slopLabel(cl));
       main.querySelector("#rev-note").textContent = `${s}% slop`;
+      main.querySelector("#slopJump").innerHTML = slopTag(cl);
       const rd = review(cl.id).date;
       main.querySelector("#rev-date").textContent = rd ? `Last reviewed ${rd}` : "Not reviewed yet.";
       const origin = main.querySelector("#meterSlot");
       if (s === 0 && lastSlop > 0) celebrate("verified", { title: cl.title }, origin);
-      else if (slopLevel(s) < slopLevel(lastSlop)) celebrate("slop", { slop: s, label: LABELS[slopLevel(s)] }, origin);
+      else if (slopLevel(s) < slopLevel(lastSlop)) celebrate("slop", { slop: s, label: slopLabel(cl) }, origin);
       lastSlop = s;
     };
     updateProgress(); updateMeter();
@@ -480,6 +492,10 @@
       }
     });
     main.querySelector("#printBtn").addEventListener("click", () => window.print());
+    main.querySelector("#slopJump").addEventListener("click", () => {
+      const sec = main.querySelector("#sec-review"); sec.open = true;
+      sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 
     main.querySelectorAll("[data-link]").forEach(cb => cb.addEventListener("change", () => {
       store.links[cb.dataset.link] = cb.checked; save(); updateMeter();
@@ -511,34 +527,47 @@
     return out;
   }
 
-  /* ---------------- About / slop meter ---------------- */
+  /* ---------------- About & the slop meter ---------------- */
   function renderAbout() {
-    document.title = "How the slop meter works · Music Teacher Checklists";
-    const reviewed = CHECKLISTS.filter(c => slopOf(c) < 100).length;
+    document.title = `About · ${SITE}`;
+    const human = CHECKLISTS.filter(hasHuman).length;
+    const aiOnly = CHECKLISTS.filter(c => !hasHuman(c) && slopOf(c) < 100).length;
+    const pct = v => `${Math.round(v * 100)}%`;
     main.innerHTML = `<div class="prose">
-      <h1>${em(3, EMO.ui.about)}How the AI slop meter works</h1>
-      <p>An AI (Claude) drafted every checklist, rationale, and source note on this site in October 2026. Drafts like that can sound confident and still be wrong, generic, or slightly off from what a source says. That's the "slop." The meter shows how much of each checklist a human has actually checked.</p>
-      ${meterBig(siteSlop(), "Whole site right now")}
-      <p>${reviewed} of ${CHECKLISTS.length} checklists have had at least one human check.</p>
+      <h1>${em(3, EMO.ui.about)}About these checklists</h1>
+      <p>Adam and Billy's checklists for music teachers: preschool through college, private studios, TAs, and administrators. AI (Claude) drafted them with real, linked sources, and people check them over time. See the <a href="#/history">site history</a> for how it was made, prompt by prompt.</p>
 
-      <h2>Scoring</h2>
-      <p>Every checklist starts at <strong>100% slop</strong>. Each human check removes some:</p>
+      <h2>The AI slop meter</h2>
+      <p>"Slop" is the chance that a confident-sounding AI draft is wrong, generic, or a little off from what its source says. Each checklist's meter lives in its <em>Review</em> section and shows how much has actually been checked, and by whom.</p>
+      ${meterBig(siteSlop(), "Whole site right now", `${human} of ${CHECKLISTS.length} have a human check`)}
+      <p>Right now ${aiOnly} checklists have AI checks only, and ${human} have at least one human check.</p>
+
+      <h3>Not all AI drafts are equally sloppy</h3>
+      <p>A cheap AI that writes from memory and never checks anything is <strong>100% slop</strong>. An AI that confirmed every source exists and matched each claim to the source's abstract has done real work, so that draft starts at <strong>85%</strong>. AI checks only count toward the source checks, and for less than a person's check. Only humans can earn the read, fix, and expert points.</p>
       <table class="score-table">
-        <thead><tr><th>Human check</th><th>Slop removed</th></tr></thead>
+        <thead><tr><th>Check</th><th>AI can earn</th><th>Human earns</th></tr></thead>
         <tbody>
-          <tr><td>Read the whole checklist</td><td>−${W.read}</td></tr>
-          <tr><td>Fixed what was wrong or generic (or confirmed it's fine)</td><td>−${W.edited}</td></tr>
-          <tr><td>Reviewed by someone who does this job</td><td>−${W.expert}</td></tr>
-          <tr><td>Source links opened by a human (split across sources)</td><td>−${W.links}</td></tr>
-          <tr><td>Sources confirmed to support their claims (split across sources)</td><td>−${W.claims}</td></tr>
+          <tr><td>Read the whole checklist</td><td>0</td><td>−${W.read}</td></tr>
+          <tr><td>Fixed what was wrong or generic (or confirmed it's fine)</td><td>0</td><td>−${W.edited}</td></tr>
+          <tr><td>Reviewed by someone who does this job</td><td>0</td><td>−${W.expert}</td></tr>
+          <tr><td>Source links resolve to the right source</td><td>−${W.links * AI_CREDIT.links} (${pct(AI_CREDIT.links)})</td><td>−${W.links}</td></tr>
+          <tr><td>Sources support how they're used: claims matched by the drafting AI</td><td>−${W.claims * AI_CREDIT.claims.drafter} (${pct(AI_CREDIT.claims.drafter)})</td><td rowspan="2">−${W.claims}</td></tr>
+          <tr><td>…plus an independent second AI double-check</td><td>−${W.claims * AI_CREDIT.claims["second-check"]} total (${pct(AI_CREDIT.claims["second-check"])})</td></tr>
         </tbody>
       </table>
-      <p>Checking sources counts the most, because that's where AI drafts most often go subtly wrong. A real paper gets cited for something it didn't quite say.</p>
+      <p class="small muted">Source points are split evenly across a checklist's sources. A human check on a source replaces the AI credit for that source.</p>
+      <ul>
+        <li><strong>100%</strong>: raw AI draft, nothing checked.</li>
+        <li><strong>93%</strong>: links verified by AI, claims not yet checked. These are the 21 checklists added by the cloud session on Oct 23.</li>
+        <li><strong>85%</strong>: links verified and claims matched to abstracts by the drafting AI. These are the first 47 checklists.</li>
+        <li><strong>~78%</strong>: the most AI alone can reach, after an independent second AI double-check of claims.</li>
+        <li><strong>Below that</strong>: only people can take it further. 0% means a human read it, fixed it, had an expert review it, and checked every source.</li>
+      </ul>
 
       <h2>What the AI did and didn't check</h2>
       <ul>
-        <li><strong>Did:</strong> resolved every DOI against Crossref and opened or searched for every web link, so every source is real and the citation details match.</li>
-        <li><strong>Did:</strong> read available abstracts for many studies and wrote claims to match them.</li>
+        <li><strong>Did:</strong> resolved every DOI against Crossref and opened or searched for every web link (re-run Oct 23 for all 147 sources).</li>
+        <li><strong>Did (first 47):</strong> read available abstracts and wrote claims to match them.</li>
         <li><strong>Didn't:</strong> read most full papers. Some claims come from abstracts or general knowledge of the literature.</li>
         <li><strong>Didn't:</strong> check your state's laws, your district's policies, or your institution's rules.</li>
       </ul>
@@ -582,6 +611,39 @@
       }
     });
     main.querySelector("#tryCelebrate").addEventListener("click", e => celebrate("test", {}, e.currentTarget));
+  }
+
+  /* ---------------- Site history ---------------- */
+  function renderHistory(focusId) {
+    document.title = `History · ${SITE}`;
+    const commitLink = sha => `<a href="${REPO}/commit/${encodeURIComponent(sha)}" target="_blank" rel="noopener"><code>${esc(sha)}</code></a>`;
+    main.innerHTML = `<div class="prose">
+      <h1>${em(3, EMO.ui.history)}How this site was made</h1>
+      <p>Every prompt and change that shaped the site, oldest first. Each entry has a quick summary. Open <em>Full prompt</em> for the exact words, typos included. <a href="${REPO}/commits/main" target="_blank" rel="noopener">All commits on GitHub</a>.</p>
+      <ol class="history">${HISTORY.map((h, i) => `
+        <li class="h-entry" id="h-${esc(h.id)}">
+          <div class="h-head">
+            <span class="h-num">${i + 1}</span>
+            <div>
+              <h2 class="h-title"><a href="#/history/${esc(h.id)}">${esc(h.title)}</a></h2>
+              <p class="h-meta">${esc(h.date)}${h.time ? `, ${esc(h.time)}` : ""} · ${esc(h.who)} · ${esc(h.agent)}</p>
+            </div>
+          </div>
+          <p>${esc(h.summary)}</p>
+          ${h.prompt ? `<details class="h-full"${focusId === h.id ? " open" : ""}><summary>Full prompt${h.qa && h.qa.length ? " and answers" : ""}</summary>
+            <blockquote class="h-prompt">${esc(h.prompt)}</blockquote>
+            ${(h.qa || []).map(x => `<p class="h-q"><strong>Q:</strong> ${esc(x.q)}</p><blockquote class="h-prompt">${esc(x.a)}</blockquote>`).join("")}
+          </details>` : h.promptNote ? `<p class="small muted">Prompt: ${esc(h.promptNote)}</p>` : ""}
+          ${h.did && h.did.length ? `<details class="h-full"${focusId === h.id ? " open" : ""}><summary>What happened</summary><ul>${h.did.map(d => `<li>${esc(d)}</li>`).join("")}</ul></details>` : ""}
+          <p class="small h-links">${(h.commits || []).length ? `Commit${h.commits.length > 1 ? "s" : ""}: ${h.commits.map(commitLink).join(", ")}` : ""}
+            ${(h.links || []).map(l => `${(h.commits || []).length ? " · " : ""}<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</p>
+        </li>`).join("")}
+      </ol>
+    </div>`;
+    if (focusId) {
+      const el = document.getElementById("h-" + focusId);
+      if (el) setTimeout(() => el.scrollIntoView({ block: "start" }), 0);
+    }
   }
 
   /* ---------------- Celebrations ----------------

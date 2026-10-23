@@ -11,6 +11,7 @@
   emoji: "🥪",
   cat: "survival", aud: ["elementary", "secondary", "college", "studio", "admin", "ta", "preschool"], tags: ["meetings", "self-care", "hangry", "decision-making"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "You're not furious, you're hungry. Probably. Eat, hydrate, and don't volunteer for anything until you've had a snack.",
   items: [
     { t: "Eat something before you go. Keep shelf-stable snacks in your desk, bag, and car.",
@@ -47,6 +48,7 @@
   emoji: "🛟",
   cat: "survival", aud: ["elementary", "secondary", "college", "studio"], tags: ["self-care", "burnout", "sleep", "voice"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Protect sleep and your voice, delegate, and put one real day off on the calendar now.",
   items: [
     { t: "Protect sleep. Even short-term sleep loss measurably hurts attention and working memory.", src: ["lim2010"] },
@@ -76,6 +78,7 @@
   emoji: "🗣️",
   cat: "survival", aud: ["elementary", "secondary", "college", "studio", "preschool", "ta"], tags: ["voice", "health", "self-care"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Teachers get voice disorders far more often than the general public. Amplify, hydrate, rest, and stop shouting over the band.",
   items: [
     { t: "Know the risk: teachers report voice disorders far more often than non-teachers.", src: ["roy2004"] },
@@ -106,6 +109,7 @@
   emoji: "📧",
   cat: "families", aud: ["elementary", "secondary", "studio", "preschool"], tags: ["communication", "parents", "conflict"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Wait, check the facts, reply short and kind, offer to talk, and document.",
   items: [
     { t: "Don't reply while angry. Draft, then wait (but acknowledge within a day or two)." },
@@ -132,6 +136,7 @@
   emoji: "💬",
   cat: "families", aud: ["elementary", "secondary", "preschool"], tags: ["communication", "parents", "newsletters"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Early, regular, specific, translated, and with something families can actually do.",
   items: [
     { t: "Send a positive, specific note home in the first few weeks.", src: ["kraft2015"] },
@@ -155,6 +160,7 @@
   emoji: "📣",
   cat: "families", aud: ["elementary", "secondary", "college", "admin", "studio", "preschool"], tags: ["advocacy", "budget", "research literacy"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Drop 'music makes you smarter.' Lead with what music actually is and does, and use local data.",
   items: [
     { t: "Retire the 'music makes kids smarter' pitch.",
@@ -187,6 +193,7 @@
   emoji: "📄",
   cat: "studio", aud: ["studio"], tags: ["business", "policies", "safeguarding", "taxes"],
   evidence: "standard",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Write it down before you need it: money, missed lessons, safety, and how you communicate.",
   items: [
     { t: "Tuition: amount, schedule (monthly, semester, per lesson), and payment methods." },
@@ -215,6 +222,7 @@
   emoji: "👋",
   cat: "studio", aud: ["studio", "college"], tags: ["lessons", "motivation", "practice"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Find out why they're here, give them a win today, and send them home with a specific practice plan.",
   items: [
     { t: "Ask what music they love and why they want lessons.", src: ["ryan2000"] },
@@ -242,6 +250,7 @@
   emoji: "👪",
   cat: "studio", aud: ["studio"], tags: ["parents", "practice", "communication"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Parents shape practice at home. Give them a job they can actually do.",
   items: [
     { t: "Learn the parents' goals for their child, and make sure they're realistic and shared.", src: ["mcpherson2009"] },
@@ -266,6 +275,7 @@
   emoji: "🛡️",
   cat: "studio", aud: ["studio", "secondary", "college", "ta"], tags: ["safeguarding", "boundaries", "law", "online lessons"],
   evidence: "standard",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Visible, interruptible, documented, and with parents in the loop for minors.",
   items: [
     { t: "Teach in a space that's visible and interruptible (a window in the door, door ajar, others nearby).", src: ["cdcYso"] },
@@ -296,6 +306,7 @@
   emoji: "©️",
   cat: "legal", aud: ["elementary", "secondary", "college", "studio", "admin", "ta"], tags: ["copyright", "law", "photocopies", "arranging"],
   evidence: "standard",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Buy the copies, ask before arranging, and know the narrow emergency exceptions.",
   items: [
     { t: "Buy enough legal copies for every performer.", src: ["circ21"] },

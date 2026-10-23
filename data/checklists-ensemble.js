@@ -11,6 +11,7 @@
   emoji: "📚",
   cat: "rep", aud: ["secondary", "college", "elementary"], tags: ["choir", "band", "orchestra", "planning"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "What will students learn from this piece? Can these students sing or play it in the time you have? Would you be proud of it in ten years?",
   items: [
     { t: "Start from what you want students to learn this term. The repertoire is the curriculum.", src: ["reynolds2000"] },
@@ -43,6 +44,7 @@
   emoji: "🌏",
   cat: "rep", aud: ["elementary", "secondary", "college", "preschool"], tags: ["equity", "culture", "choir", "world music"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Context, consultation, credit, and care. Not a costume, not a token closer.",
   items: [
     { t: "Research where the piece comes from and what it was for (sacred, ritual, work, play, protest)." },
@@ -70,6 +72,7 @@
   emoji: "🎼",
   cat: "rehearsal", aud: ["secondary", "college", "elementary"], tags: ["choir", "band", "orchestra", "pacing", "feedback"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Less talking, more playing. Every stop has a purpose, then back to music fast.",
   items: [
     { t: "Post the order before students arrive." },
@@ -104,6 +107,7 @@
   emoji: "🗒️",
   cat: "rehearsal", aud: ["secondary", "college"], tags: ["score study", "planning", "choir", "band", "orchestra"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Know the score cold, predict the problems, and budget the minutes.",
   items: [
     { t: "Study the score away from the podium: form, harmony, texture, text, and every line sung or played.", src: ["goolsby1999"] },
@@ -129,6 +133,7 @@
   emoji: "⏱️",
   cat: "rehearsal", aud: ["studio", "secondary", "college", "elementary"], tags: ["practice", "motivation", "studio"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Count correct repetitions, not minutes. Fix errors early and precisely.",
   items: [
     { t: "Define the practice goal as accurate repetitions, not minutes.",
@@ -160,6 +165,7 @@
   emoji: "🎻",
   cat: "rehearsal", aud: ["secondary", "college", "ta"], tags: ["sectionals", "chamber music", "student leaders", "TA"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "A sectional without a goal is just a hangout with instruments.",
   items: [
     { t: "Get specific goals from the director: which measures, what problem, and the target tempo." },
@@ -187,6 +193,7 @@
   emoji: "📜",
   cat: "concerts", aud: ["elementary", "secondary", "college", "studio", "preschool"], tags: ["programs", "accessibility", "writing", "copyright"],
   evidence: "mixed",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Accurate, credited, accessible, proofread by a second human, with short notes.",
   items: [
     { t: "Get titles, composer and arranger names, and dates right, including diacritics (Dvořák, not Dvorak)." },
@@ -218,6 +225,7 @@
   emoji: "🎭",
   cat: "concerts", aud: ["elementary", "secondary", "college", "studio"], tags: ["concerts", "logistics", "supervision"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Call times, supervision, the script, and the strike. Assume nothing.",
   items: [
     { t: "Send call times, dress, and location to students and families (again) 48 hours out." },
@@ -247,6 +255,7 @@
   emoji: "🎙️",
   cat: "concerts", aud: ["secondary", "college", "studio", "admin"], tags: ["copyright", "licensing", "streaming", "recording"],
   evidence: "standard",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Performing live and distributing a recording are different legal acts. Plan licenses before the concert.",
   items: [
     { t: "Know that a nonprofit live performance may be exempt from performance licensing, but a recording you distribute is different.", src: ["usc110"] },
@@ -277,6 +286,7 @@
   emoji: "⚖️",
   cat: "assessment", aud: ["secondary", "college", "admin"], tags: ["auditions", "bias", "equity", "rubrics"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Hide what you can, define criteria first, randomize order, and use more than one judge.",
   items: [
     { t: "Screen auditions when possible, or judge from audio only.",
@@ -312,6 +322,7 @@
   emoji: "🧑‍⚖️",
   cat: "assessment", aud: ["college", "admin", "ta"], tags: ["juries", "applied lessons", "rubrics", "bias"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Same rubric, calibrated panel, randomized order, food in the room, and written feedback students can use.",
   items: [
     { t: "Publish the rubric and expectations to students well in advance." },
@@ -342,6 +353,7 @@
   emoji: "📊",
   cat: "assessment", aud: ["secondary", "college"], tags: ["grading", "assessment", "rubrics", "choir", "band", "orchestra"],
   evidence: "research",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Grade musical learning, not just attendance and attitude, and use more than one kind of evidence.",
   items: [
     { t: "Look at your current grade breakdown. How much is attendance, attitude, or participation?",
@@ -372,6 +384,7 @@
   emoji: "🚌",
   cat: "logistics", aud: ["secondary", "college", "admin"], tags: ["trips", "supervision", "logistics", "safety"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Approvals, money, medical, supervision, and a plan for when the bus breaks down.",
   items: [
     { t: "Get administrative approval in writing before telling students." },
@@ -399,6 +412,7 @@
   emoji: "📦",
   cat: "logistics", aud: ["elementary", "secondary", "college"], tags: ["instruments", "inventory", "budget"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Serial numbers, signed agreements, a repair budget, and hygiene for shared instruments.",
   items: [
     { t: "Inventory every instrument: make, model, serial number, condition, and location." },
@@ -422,6 +436,7 @@
   emoji: "🏁",
   cat: "logistics", aud: ["elementary", "secondary", "college", "studio"], tags: ["planning", "inventory", "families"],
   evidence: "practice",
+  ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },
   summary: "Collect, file, thank, and write down next year's calendar while you still remember.",
   items: [
     { t: "Collect instruments, uniforms, folders, and music." },

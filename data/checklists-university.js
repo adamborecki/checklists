@@ -15,6 +15,7 @@
   emoji: "🔑",
   cat: "higher", aud: ["college", "ta", "admin"], tags: ["new faculty", "tenure", "mentoring", "first year", "NASM"],
   evidence: "mixed",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Learn the people and the unwritten rules, teach well without overpreparing, write a little every day, and say yes slowly.",
   items: [
     { t: "Get the written expectations for tenure, promotion, or reappointment, and ask your chair what they actually look like for music faculty.", src: ["aaup1940"] },
@@ -54,6 +55,7 @@
   emoji: "🌱",
   cat: "higher", aud: ["college", "ta", "admin", "studio"], tags: ["first-year students", "belonging", "college", "wellness", "transition"],
   evidence: "research",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Tell them the struggle is normal and temporary, write down the unwritten rules, and make sure every student has at least one person who knows their name.",
   items: [
     { t: "Say it early and plainly: almost everyone struggles at first, and it gets better with time and effort.",
@@ -91,6 +93,7 @@
   emoji: "📘",
   cat: "nasm", aud: ["college", "admin", "ta"], tags: ["NASM", "accreditation", "standards", "new faculty"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "NASM accreditation runs on published standards, an honest self-study, peer review, and annual data. Here's what that means for your job.",
   items: [
     { t: "Find out whether your institution is NASM-accredited, and when its next comprehensive review is.", src: ["nasmHandbook"] },
@@ -120,6 +123,7 @@
   emoji: "🧾",
   cat: "nasm", aud: ["admin", "college"], tags: ["NASM", "accreditation", "self-study", "site visit", "department chair"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Start early, write honestly, gather evidence as you go, and make the visit easy for the evaluators.",
   items: [
     { t: "Confirm your review timeline with NASM, then work backward from the self-study due date, the visit, and the Commission meeting.", src: ["nasmVisitors"] },
@@ -154,6 +158,7 @@
   emoji: "🦺",
   cat: "nasm", aud: ["admin", "college", "ta"], tags: ["NASM", "health", "hearing", "voice", "injury", "accreditation"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Give every music major basic information on hearing, vocal, and musculoskeletal health, and make it findable, current, and real.",
   items: [
     { t: "Know the expectation: music majors receive basic information on maintaining hearing, vocal, and musculoskeletal health and preventing injury.",
@@ -183,6 +188,7 @@
   emoji: "📐",
   cat: "nasm", aud: ["admin", "college"], tags: ["NASM", "curriculum", "degrees", "accreditation"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "Start with what graduates should be able to do, check the curricular balance, and make the catalog say exactly what students experience.",
   items: [
     { t: "Read the standards for your specific degree type (professional BM, liberal arts BA or BS, music education, graduate) before drafting anything.", src: ["nasmHandbook"] },
@@ -210,6 +216,7 @@
   emoji: "🗓️",
   cat: "nasm", aud: ["admin", "college"], tags: ["NASM", "HEADS", "data", "recruiting", "accreditation", "department chair"],
   evidence: "standard",
+  ai: { links: true, claims: "none", note: "Citations checked by web search (2026-10-23); DOIs and URLs re-verified via Crossref and live check (2026-10-23). Claims not yet checked against sources." },
   summary: "File HEADS by January 31, follow the Code of Ethics when recruiting, and keep up with Handbook changes.",
   items: [
     { t: "File the HEADS Data Survey. It opens November 1 and is due January 31.", src: ["nasmHeads"] },
