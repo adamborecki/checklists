@@ -8,6 +8,7 @@
 {
   id: "faculty-meeting-empty-stomach",
   title: "Surviving a faculty meeting on an empty stomach",
+  emoji: "🥪",
   cat: "survival", aud: ["elementary", "secondary", "college", "studio", "admin", "ta", "preschool"], tags: ["meetings", "self-care", "hangry", "decision-making"],
   evidence: "research",
   summary: "You're not furious, you're hungry. Probably. Eat, hydrate, and don't volunteer for anything until you've had a snack.",
@@ -43,6 +44,7 @@
 {
   id: "concert-season-survival",
   title: "Surviving concert season",
+  emoji: "🛟",
   cat: "survival", aud: ["elementary", "secondary", "college", "studio"], tags: ["self-care", "burnout", "sleep", "voice"],
   evidence: "research",
   summary: "Protect sleep and your voice, delegate, and put one real day off on the calendar now.",
@@ -71,6 +73,7 @@
 {
   id: "teacher-voice",
   title: "Protecting your teaching voice",
+  emoji: "🗣️",
   cat: "survival", aud: ["elementary", "secondary", "college", "studio", "preschool", "ta"], tags: ["voice", "health", "self-care"],
   evidence: "research",
   summary: "Teachers get voice disorders far more often than the general public. Amplify, hydrate, rest, and stop shouting over the band.",
@@ -100,6 +103,7 @@
 {
   id: "upset-parent-email",
   title: "Responding to an upset parent email",
+  emoji: "📧",
   cat: "families", aud: ["elementary", "secondary", "studio", "preschool"], tags: ["communication", "parents", "conflict"],
   evidence: "mixed",
   summary: "Wait, check the facts, reply short and kind, offer to talk, and document.",
@@ -125,6 +129,7 @@
 {
   id: "family-communication",
   title: "Building family communication from day one",
+  emoji: "💬",
   cat: "families", aud: ["elementary", "secondary", "preschool"], tags: ["communication", "parents", "newsletters"],
   evidence: "research",
   summary: "Early, regular, specific, translated, and with something families can actually do.",
@@ -147,6 +152,7 @@
 {
   id: "honest-advocacy",
   title: "Advocating for your program (without overclaiming)",
+  emoji: "📣",
   cat: "families", aud: ["elementary", "secondary", "college", "admin", "studio", "preschool"], tags: ["advocacy", "budget", "research literacy"],
   evidence: "research",
   summary: "Drop 'music makes you smarter.' Lead with what music actually is and does, and use local data.",
@@ -178,6 +184,7 @@
 {
   id: "studio-policies",
   title: "Setting up your studio policies",
+  emoji: "📄",
   cat: "studio", aud: ["studio"], tags: ["business", "policies", "safeguarding", "taxes"],
   evidence: "standard",
   summary: "Write it down before you need it: money, missed lessons, safety, and how you communicate.",
@@ -205,6 +212,7 @@
 {
   id: "studio-first-lesson",
   title: "First lesson with a new student",
+  emoji: "👋",
   cat: "studio", aud: ["studio", "college"], tags: ["lessons", "motivation", "practice"],
   evidence: "research",
   summary: "Find out why they're here, give them a win today, and send them home with a specific practice plan.",
@@ -231,6 +239,7 @@
 {
   id: "studio-parents",
   title: "Working with studio parents",
+  emoji: "👪",
   cat: "studio", aud: ["studio"], tags: ["parents", "practice", "communication"],
   evidence: "research",
   summary: "Parents shape practice at home. Give them a job they can actually do.",
@@ -254,6 +263,7 @@
 {
   id: "safeguarding-one-on-one",
   title: "Safeguarding in one-on-one lessons",
+  emoji: "🛡️",
   cat: "studio", aud: ["studio", "secondary", "college", "ta"], tags: ["safeguarding", "boundaries", "law", "online lessons"],
   evidence: "standard",
   summary: "Visible, interruptible, documented, and with parents in the loop for minors.",
@@ -283,6 +293,7 @@
 {
   id: "copyright-basics",
   title: "Copyright basics for music teachers (U.S.)",
+  emoji: "©️",
   cat: "legal", aud: ["elementary", "secondary", "college", "studio", "admin", "ta"], tags: ["copyright", "law", "photocopies", "arranging"],
   evidence: "standard",
   summary: "Buy the copies, ask before arranging, and know the narrow emergency exceptions.",

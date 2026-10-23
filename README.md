@@ -2,6 +2,8 @@
 
 Research-linked checklists for music teachers: preschool, K–12, college, private studio, TAs, and administrators (chairs, area directors, deans, provosts, presidents).
 
+68 checklists in 18 categories, including health and wellness, English learners, autistic students, student safety, new faculty, and NASM accreditation.
+
 Every checklist has:
 
 - **Checkable items** (saved in your browser), many with a **more** button for detail
@@ -9,8 +11,9 @@ Every checklist has:
 - A **Rationale** section explaining why
 - A **Sources** section with real, linked studies, laws, and guidelines
 - An **AI slop meter** showing how much of it a human has checked
+- **Emoji levels** and **celebrations** you control from the **Display** button
 
-> An AI (Claude) drafted all of this on 2026-10-22. Every checklist starts at **100% slop**.
+> An AI (Claude) drafted all of this on 2026-10-22 and 2026-10-23. Every checklist starts at **100% slop**.
 
 ## Run it
 
@@ -34,11 +37,30 @@ python3 -m http.server 8417
 index.html                    page shell
 css/style.css                 styles (light/dark, print, mobile)
 js/app.js                     app: routing, filters, checklists, slop meter, storage
-data/categories.js            categories, audiences ("I'm a…"), evidence labels
+data/categories.js            categories, audiences ("I'm a…"), evidence labels, their emoji
+data/emoji.js                 emoji levels, UI emoji, item keyword → emoji map, confetti glyphs
 data/sources.js               the source library (every citation lives here once)
 data/checklists-*.js          the checklists, grouped by area
 tools/check-links.mjs         checks every source URL (node tools/check-links.mjs)
 ```
+
+## Emoji and celebrations
+
+The **Display** button in the header has two settings, saved in this browser:
+
+| Emoji level                         | What you get                                                        |
+|-------------------------------------|---------------------------------------------------------------------|
+| None whatsoever                     | No emoji anywhere. Emoji typed into checklist text are stripped too. |
+| Barely any                          | One per checklist (on its page) and on category cards.              |
+| **Tactful** (default)               | Checklist and category emoji in lists, one emoji in celebrations.   |
+| Plenty                              | Nav, headings, buttons, evidence labels, audiences, and items whose text matches a topic. |
+| There's no such thing as too many   | Every item, sparkles on titles, emoji confetti on every checkbox.   |
+
+Emoji are decorative (`aria-hidden`), so screen readers skip them. Each checklist sets its own with `emoji: "🎻"`. The keyword map that picks item emoji lives in `data/emoji.js`.
+
+**Celebrations** fire on your first checked box, the halfway point, finishing a checklist, lowering a checklist's slop band, and reaching 0% slop. Modes: **Confetti** (default), **Quiet** (a message, nothing moves), or **Off**. If the device asks for reduced motion, confetti is skipped automatically.
+
+To add a celebration, add a key to `CELEBRATIONS` in `js/app.js` and call `celebrate("key", data, originElement)`.
 
 ## How the slop meter works
 
@@ -63,11 +85,16 @@ You can also **Export** all your reviews and checks as JSON from the Slop meter 
 
 ## What the AI did and didn't verify
 
+**Sources added 2026-10-23** (the 21 newest checklists): Crossref and doi.org were unreachable from the drafting environment, so these were checked by **web search only**. Titles, authors, journals, volumes, and pages matched search results. Three DOIs (`boice1989`, `milton2012`, `paruthi2016`) didn't appear in results and are marked in `data/sources.js`. NASM details (BM percentages, HEADS dates, the May 1 Code of Ethics rule) came from NASM pages and copies of past Handbooks, not a full read of the 2025–26 Handbook. Run `node tools/check-links.mjs` before trusting them.
+
+**Sources from 2026-10-22:**
+
 - ✅ Resolved every DOI against the Crossref API, so titles, authors, journals, and years match real records.
 - ✅ Opened or searched for every web URL. `tools/check-links.mjs` reports 0 broken. Nine sites (CDC, NAfME, ed.gov, NAEYC, Smithsonian Folkways, a stats blog) block automated checks and were confirmed by search instead.
 - ✅ Read abstracts where available and wrote claims to match them.
 - ❌ Did **not** read most full papers. Several claims come from abstracts or general knowledge of the literature.
-- ❌ Did **not** check state laws, district policies, or institutional rules. Mandated reporting, FERPA, Title IX, and copyright items are U.S.-centric.
+- ❌ Did **not** check state laws, district policies, or institutional rules. Mandated reporting, FERPA, Title IX, Clery, English-learner, and copyright items are U.S.-centric.
+- ⚠️ The 2015 federal English-learner guidance was rescinded in August 2025. The checklists say so and cite the underlying law (Title VI, *Lau v. Nichols*) instead.
 
 This makes the **"confirmed it supports how it's used"** checks the most valuable thing a human reviewer can do.
 
@@ -79,6 +106,7 @@ Each checklist is a plain object:
 {
   id: "unique-slug",
   title: "Doing the thing",
+  emoji: "🎻",                         // shown depending on the viewer's emoji level
   cat: "rehearsal",                    // id from data/categories.js
   aud: ["secondary", "college"],       // audiences from data/categories.js
   tags: ["choir", "pacing"],

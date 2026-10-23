@@ -6,6 +6,7 @@
   const AUDS = window.MTC_AUDIENCES || [];
   const EVID = window.MTC_EVIDENCE || {};
   const SOURCES = window.MTC_SOURCES || {};
+  const EMO = window.MTC_EMOJI || { levels: [{ id: "none", name: "None" }], defaultLevel: "none", ui: {}, evidence: {}, slop: {}, keywords: [], fallback: [], sparkle: [], confetti: [] };
   const CHECKLISTS = (window.MTC_CHECKLISTS || []).slice();
   const catById = Object.fromEntries(CATS.map(c => [c.id, c]));
   const audById = Object.fromEntries(AUDS.map(a => [a.id, a]));
@@ -15,7 +16,7 @@
 
   /* ---------------- Storage (localStorage, wrapped) ---------------- */
   const LS_KEY = "mtc.v1";
-  const empty = () => ({ checks: {}, reviews: {}, links: {} });
+  const empty = () => ({ checks: {}, reviews: {}, links: {}, prefs: {}, seen: {} });
   let store = empty();
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -25,6 +26,35 @@
     try { localStorage.setItem(LS_KEY, JSON.stringify(store)); }
     catch (e) { toast("Couldn't save: browser storage is blocked."); }
   }
+
+  /* ---------------- Display preferences: emoji level & celebrations ---------------- */
+  const CELEB_MODES = [
+    { id: "confetti", name: "Confetti", help: "A message and a burst of confetti when you finish things." },
+    { id: "quiet",    name: "Quiet",    help: "Just a message. Nothing moves." },
+    { id: "off",      name: "Off",      help: "No celebrations." }
+  ];
+  const levelIds = EMO.levels.map(l => l.id);
+  function pref(k) {
+    const p = store.prefs || {};
+    if (k === "emoji") return levelIds.includes(p.emoji) ? p.emoji : EMO.defaultLevel;
+    if (k === "celebrate") return CELEB_MODES.some(m => m.id === p.celebrate) ? p.celebrate : "confetti";
+  }
+  function setPref(k, v) { store.prefs = Object.assign({}, store.prefs, { [k]: v }); save(); }
+  // 0 = none, 1 = barely, 2 = tactful, 3 = plenty, 4 = no such thing as too many
+  function lvl() { return Math.max(0, levelIds.indexOf(pref("emoji"))); }
+  // Decorative emoji are hidden from screen readers so "party popper" isn't read aloud everywhere.
+  function em(min, ch, after) { return ch && lvl() >= min ? `<span class="emo${after ? " emo-after" : ""}" aria-hidden="true">${ch}</span>` : ""; }
+  function emText(min, ch) { return ch && lvl() >= min ? ch + " " : ""; }
+  const EMOJI_RE = /(\p{Extended_Pictographic}|\p{Regional_Indicator})(\uFE0F|\u200D(\p{Extended_Pictographic}))*/gu;
+  // Text from the data files: at "None whatsoever", strip any emoji an author typed in.
+  function tx(s) { return esc(lvl() === 0 ? String(s == null ? "" : s).replace(EMOJI_RE, "").replace(/ {2,}/g, " ") : s); }
+  function itemEmoji(text, i) {
+    if (lvl() < 3) return "";
+    const hit = EMO.keywords.find(([re]) => re.test(text));
+    if (hit) return hit[1];
+    return lvl() >= 4 && EMO.fallback.length ? EMO.fallback[i % EMO.fallback.length] : "";
+  }
+  function sparkle(i, after) { return lvl() >= 4 && EMO.sparkle.length ? em(4, EMO.sparkle[i % EMO.sparkle.length], after) : ""; }
 
   /* ---------------- Review + slop math ---------------- */
   // Weights add to 100. Slop = 100 − human-checked points.
@@ -101,11 +131,12 @@
     return Object.entries(m).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   }
   let toastTimer;
-  function toast(msg) {
+  function toast(msg, kind) {
     let el = document.querySelector(".toast");
     if (!el) { el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
     el.textContent = msg; el.classList.add("show");
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    el.classList.toggle("toast-celebrate", kind === "celebrate");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), kind === "celebrate" ? 3600 : 2200);
   }
   function copyText(text) {
     const fallback = () => {
@@ -128,7 +159,7 @@
     return `<div class="meter meter-big s${lv}" style="--pct:${s}%">
       <div class="meter-head">
         <span class="meter-title">${esc(title || "AI slop meter")}</span>
-        <span><span class="meter-num">${s}%</span> <span class="meter-label">${LABELS[lv]}</span></span>
+        <span><span class="meter-num">${s}%</span> <span class="meter-label">${slopEmo(lv)}${LABELS[lv]}</span></span>
       </div>
       <div class="meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${s}" aria-label="AI slop ${s} percent"><div class="meter-fill"></div></div>
       <div class="meter-ends"><span>0% · human-verified</span><span>100% · raw AI draft</span></div>
@@ -141,10 +172,16 @@
       <div class="meter-bar"><div class="meter-fill"></div></div>
     </div>`;
   }
+  function slopEmo(lv) {
+    const e = EMO.slop[lv]; if (!e || lvl() < 3) return "";
+    return em(3, lvl() >= 4 ? e.repeat(lv >= 4 ? 3 : 2) : e);
+  }
   function evLabel(ev) { return (EVID[ev] && EVID[ev].name) || ev; }
+  function evHtml(ev) { return `${em(3, EMO.evidence[ev])}${esc(evLabel(ev))}`; }
+  function catHtml(c, min) { return `${em(min, c.emoji)}${esc(c.name || c.id)}`; }
 
   /* ---------------- Router ---------------- */
-  function route() {
+  function route(keepScroll) {
     const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
     const [view, arg] = [h.split("/")[0], h.split("/").slice(1).join("/")];
     let nav = "list";
@@ -162,9 +199,9 @@
     document.querySelectorAll("[data-nav]").forEach(a => {
       if (a.dataset.nav === nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
-    window.scrollTo(0, 0);
+    if (keepScroll !== true) window.scrollTo(0, 0);
   }
-  window.addEventListener("hashchange", route);
+  window.addEventListener("hashchange", () => route());
 
   /* ---------------- List view ---------------- */
   const filters = { q: "", cat: "", aud: "", tag: "", sort: "cat", fromRoute: false };
@@ -174,8 +211,8 @@
     document.title = "Music Teacher Checklists";
     main.innerHTML = `
       <section class="intro">
-        <h1>Checklists for music teachers</h1>
-        <p>From Orff instruments and choosing repertoire to crying students, faculty meetings, and the dean's office.
+        <h1>${sparkle(0)}Checklists for music teachers${em(4, "🎶", true)}</h1>
+        <p>From Orff instruments and choosing repertoire to crying students, English learners, NASM site visits, and the dean's office.
         Each checklist explains its reasoning and links real sources. An AI drafted all of it, so each one carries a slop meter showing how much a human has checked it.</p>
       </section>
       ${meterBig(s, "Whole-site slop meter")}
@@ -186,7 +223,7 @@
           <label class="visually-hidden" for="cat">Category</label>
           <select id="cat">
             <option value="">All categories</option>
-            ${CATS.map(c => `<option value="${c.id}" ${filters.cat === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}
+            ${CATS.map(c => `<option value="${c.id}" ${filters.cat === c.id ? "selected" : ""}>${esc(emText(3, c.emoji) + c.name)}</option>`).join("")}
           </select>
           <label class="visually-hidden" for="sort">Sort</label>
           <select id="sort">
@@ -198,7 +235,7 @@
         </div>
         <div class="filter-row chips" role="group" aria-label="Who is this for?">
           <span class="chip-label">I'm a…</span>
-          ${AUDS.map(a => `<button type="button" class="chip" data-aud="${a.id}" aria-pressed="${filters.aud === a.id}">${esc(a.name)}</button>`).join("")}
+          ${AUDS.map(a => `<button type="button" class="chip" data-aud="${a.id}" aria-pressed="${filters.aud === a.id}">${em(3, a.emoji)}${esc(a.name)}</button>`).join("")}
         </div>
         <div id="activeTag"></div>
       </div>
@@ -246,17 +283,17 @@
     rows = rows.slice().sort(by);
     main.querySelector("#count").textContent = `${rows.length} of ${CHECKLISTS.length} checklists`;
     if (!rows.length) { list.innerHTML = `<li class="empty">Nothing matches. Try fewer filters.</li>`; return; }
-    list.innerHTML = rows.map(cl => {
+    list.innerHTML = rows.map((cl, i) => {
       const d = doneCount(cl), n = cl.items.length;
       return `<li><a class="cl-row" href="#/c/${cl.id}">
         <div class="cl-main">
-          <div class="cl-title">${esc(cl.title)}</div>
-          <div class="cl-summary">${esc(cl.summary)}</div>
+          <div class="cl-title">${em(2, cl.emoji)}${tx(cl.title)}${sparkle(i, true)}</div>
+          <div class="cl-summary">${tx(cl.summary)}</div>
           <div class="cl-meta">
-            <span class="cat-pill">${esc((catById[cl.cat] || {}).name || cl.cat)}</span>
-            <span class="ev ev-${cl.evidence}">${esc(evLabel(cl.evidence))}</span>
-            <span class="progress-pill">${d ? `${d}/${n} done` : `${n} items`}</span>
-            <span>${(cl.sources || []).length} sources</span>
+            <span class="cat-pill">${catHtml(catById[cl.cat] || { id: cl.cat }, 3)}</span>
+            <span class="ev ev-${cl.evidence}">${evHtml(cl.evidence)}</span>
+            <span class="progress-pill${d === n ? " is-done" : ""}">${d === n ? `${em(2, EMO.ui.done)}Done` : d ? `${d}/${n} done` : `${n} items`}</span>
+            <span>${em(4, EMO.ui.sources)}${(cl.sources || []).length} sources</span>
           </div>
         </div>
         ${meterMini(slopOf(cl))}
@@ -267,26 +304,26 @@
   /* ---------------- Categories & tags ---------------- */
   function renderCategories() {
     document.title = "Categories · Music Teacher Checklists";
-    main.innerHTML = `<h1>Categories</h1>
+    main.innerHTML = `<h1>${em(3, EMO.ui.categories)}Categories</h1>
       <div class="grid">${CATS.map(c => {
         const cls = CHECKLISTS.filter(x => x.cat === c.id);
         const s = cls.length ? Math.round(cls.reduce((a, x) => a + slopOf(x), 0) / cls.length) : 100;
         return `<a class="card" href="#/category/${c.id}">
-          <h3>${esc(c.name)}</h3><p>${esc(c.blurb)}</p>
+          <h3>${catHtml(c, 1)}${em(4, "✨", true)}</h3><p>${esc(c.blurb)}</p>
           <p class="small muted">${cls.length} checklist${cls.length === 1 ? "" : "s"}</p>
           ${meterMini(s)}</a>`;
       }).join("")}</div>`;
   }
   function renderTags() {
     document.title = "Tags · Music Teacher Checklists";
-    main.innerHTML = `<h1>Tags</h1>
+    main.innerHTML = `<h1>${em(3, EMO.ui.tags)}Tags</h1>
       <h2>Who it's for</h2>
       <div class="tag-cloud">${AUDS.map(a => {
         const n = CHECKLISTS.filter(c => (c.aud || []).includes(a.id)).length;
-        return `<a class="chip" href="#/" data-goaud="${a.id}">${esc(a.name)} · ${n}</a>`;
+        return `<a class="chip" href="#/" data-goaud="${a.id}">${em(3, a.emoji)}${esc(a.name)} · ${n}</a>`;
       }).join("")}</div>
       <h2>Topics</h2>
-      <div class="tag-cloud">${allTags().map(([t, n]) => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">${esc(t)} · ${n}</a>`).join("")}</div>`;
+      <div class="tag-cloud">${allTags().map(([t, n]) => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">${em(4, itemEmoji(t, n) || "🏷️")}${esc(t)} · ${n}</a>`).join("")}</div>`;
     main.querySelectorAll("[data-goaud]").forEach(a => a.addEventListener("click", () => { filters.aud = a.dataset.goaud; filters.cat = ""; filters.tag = ""; }));
   }
 
@@ -300,47 +337,48 @@
     const ev = EVID[cl.evidence] || {};
 
     main.innerHTML = `
-      <p class="crumbs"><a href="#/">All checklists</a> / <a href="#/category/${cl.cat}">${esc(cat.name)}</a></p>
-      <h1>${esc(cl.title)}</h1>
-      <p class="lede">${esc(cl.summary)}</p>
+      <p class="crumbs"><a href="#/">All checklists</a> / <a href="#/category/${cl.cat}">${catHtml(cat, 2)}</a></p>
+      <h1>${sparkle(1)}${em(1, cl.emoji)}${tx(cl.title)}${em(4, cl.emoji, true)}${sparkle(2, true)}</h1>
+      <p class="lede">${tx(cl.summary)}${em(4, "✨", true)}</p>
       <div class="meta-line">
-        <span class="ev-badge ev ev-${cl.evidence}" title="${esc(ev.help || "")}">${esc(evLabel(cl.evidence))}</span>
-        <span class="small muted">For: ${(cl.aud || []).length >= AUDS.length ? "everyone" : (cl.aud || []).map(a => esc((audById[a] || {}).name || a)).join(" · ")}</span>
+        <span class="ev-badge ev ev-${cl.evidence}" title="${esc(ev.help || "")}">${evHtml(cl.evidence)}</span>
+        <span class="small muted">For: ${(cl.aud || []).length >= AUDS.length ? `${em(4, "🌈")}everyone` : (cl.aud || []).map(a => em(3, (audById[a] || {}).emoji) + esc((audById[a] || {}).name || a)).join(" · ")}</span>
       </div>
-      <div class="meta-line">${(cl.tags || []).map(t => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">#${esc(t)}</a>`).join("")}</div>
+      <div class="meta-line">${(cl.tags || []).map(t => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">${lvl() >= 4 ? em(4, itemEmoji(t, 0) || "🏷️") : "#"}${esc(t)}</a>`).join("")}</div>
       <div id="meterSlot">${meterBig(slopOf(cl))}</div>
 
       <div class="toolbar">
-        <h2 id="items-h">Checklist <span class="small muted" id="prog-txt"></span></h2>
+        <h2 id="items-h">${em(3, EMO.ui.checklist)}Checklist <span class="small muted" id="prog-txt"></span></h2>
         <div class="btns">
-          <button type="button" class="btn" id="expandAll">Show all details</button>
-          <button type="button" class="btn" id="resetBtn">Reset checks</button>
-          <button type="button" class="btn" id="printBtn">Print</button>
+          <button type="button" class="btn" id="expandAll">${em(3, EMO.ui.expand)}<span>Show all details</span></button>
+          <button type="button" class="btn" id="resetBtn">${em(3, EMO.ui.reset)}Reset checks</button>
+          <button type="button" class="btn" id="printBtn">${em(3, EMO.ui.print)}Print</button>
         </div>
       </div>
-      <div class="progress" aria-hidden="true"><span id="prog-bar"></span></div>
+      <div class="progress" id="prog" aria-hidden="true"><span id="prog-bar"></span></div>
       <ul class="items" aria-labelledby="items-h">
         ${cl.items.map((it, i) => {
           const cites = (it.src || []).filter(k => srcIndex[k]).map(k =>
             `<a class="cite" href="#/c/${cl.id}" data-src="${k}" title="${esc((SOURCES[k] || {}).cite || k)}">${srcIndex[k]}</a>`).join("");
+          const ie = itemEmoji(it.t, i);
           return `<li class="item ${checks[i] ? "done" : ""}" data-i="${i}">
             <div class="item-row">
               <input type="checkbox" id="it-${i}" ${checks[i] ? "checked" : ""}>
-              <label for="it-${i}"><span class="item-text">${esc(it.t)}</span></label>
+              <label for="it-${i}">${ie ? `<span class="item-emo" aria-hidden="true">${ie}</span>` : ""}<span class="item-text">${tx(it.t)}</span></label>
               <span class="item-tools">${cites}${it.more ? `<button type="button" class="more-btn" aria-expanded="false" aria-controls="more-${i}">more</button>` : ""}</span>
             </div>
-            ${it.more ? `<div class="item-more" id="more-${i}" hidden>${esc(it.more)}</div>` : ""}
+            ${it.more ? `<div class="item-more" id="more-${i}" hidden>${tx(it.more)}</div>` : ""}
           </li>`;
         }).join("")}
       </ul>
 
       <details class="section why" id="sec-why">
-        <summary>Rationale: why this checklist <span class="sum-note">${esc(evLabel(cl.evidence))}</span></summary>
-        <div class="sec-body">${paras(cl.why)}<p class="small muted">${esc(ev.help || "")}</p></div>
+        <summary><span>${em(3, EMO.ui.why)}Rationale: why this checklist</span> <span class="sum-note">${esc(evLabel(cl.evidence))}</span></summary>
+        <div class="sec-body">${paras(lvl() === 0 ? String(cl.why || "").replace(EMOJI_RE, "") : cl.why)}<p class="small muted">${esc(ev.help || "")}</p></div>
       </details>
 
       <details class="section" id="sec-src">
-        <summary>Sources (${(cl.sources || []).length}) <span class="sum-note">${(cl.sources || []).filter(s => linkChecked(s.k)).length} human-opened</span></summary>
+        <summary><span>${em(3, EMO.ui.sources)}Sources (${(cl.sources || []).length})</span> <span class="sum-note">${(cl.sources || []).filter(s => linkChecked(s.k)).length} human-opened</span></summary>
         <div class="sec-body">
           <p class="ai-note">An AI resolved each DOI and URL when drafting (Oct 2026), which confirms the source exists. It did not confirm the source says what we claim. That's the human check below each source.</p>
           <ol class="sources">${(cl.sources || []).map((s, i) => {
@@ -359,7 +397,7 @@
       </details>
 
       <details class="section review-section" id="sec-review">
-        <summary>Human review (lower the slop) <span class="sum-note" id="rev-note"></span></summary>
+        <summary><span>${em(3, EMO.ui.review)}Human review (lower the slop)</span> <span class="sum-note" id="rev-note"></span></summary>
         <div class="sec-body">
           <p class="small muted">Tick what a real person has done. Source checks above count too. Reviews are saved in this browser. Use "Copy for repo" to make them permanent for everyone.</p>
           <ul class="review-steps">${STEPS.map(st => `<li><label>
@@ -372,20 +410,27 @@
           <div class="field"><label for="notes">Notes and corrections (for whoever edits the data file)</label>
             <textarea id="notes" placeholder="Item 4 is wrong for our state because…">${esc(r.notes)}</textarea></div>
           <p class="small muted" id="rev-date">${r.date ? `Last reviewed ${esc(r.date)}` : "Not reviewed yet."}</p>
-          <div class="btns"><button type="button" class="btn" id="copyRepo">Copy review for repo</button></div>
+          <div class="btns"><button type="button" class="btn" id="copyRepo">${em(3, EMO.ui.copy)}Copy review for repo</button></div>
         </div>
       </details>`;
 
     const updateProgress = () => {
       const d = doneCount(cl), n = cl.items.length;
-      main.querySelector("#prog-txt").textContent = `${d} of ${n} done`;
+      main.querySelector("#prog-txt").textContent = d === n ? `${emText(2, EMO.ui.done)}All ${n} done` : `${d} of ${n} done`;
       main.querySelector("#prog-bar").style.width = `${n ? (100 * d / n) : 0}%`;
+      main.querySelector("#prog").classList.toggle("complete", d === n);
     };
+    let lastSlop = slopOf(cl);
     const updateMeter = () => {
-      main.querySelector("#meterSlot").innerHTML = meterBig(slopOf(cl));
-      main.querySelector("#rev-note").textContent = `${slopOf(cl)}% slop`;
+      const s = slopOf(cl);
+      main.querySelector("#meterSlot").innerHTML = meterBig(s);
+      main.querySelector("#rev-note").textContent = `${s}% slop`;
       const rd = review(cl.id).date;
       main.querySelector("#rev-date").textContent = rd ? `Last reviewed ${rd}` : "Not reviewed yet.";
+      const origin = main.querySelector("#meterSlot");
+      if (s === 0 && lastSlop > 0) celebrate("verified", { title: cl.title }, origin);
+      else if (slopLevel(s) < slopLevel(lastSlop)) celebrate("slop", { slop: s, label: LABELS[slopLevel(s)] }, origin);
+      lastSlop = s;
     };
     updateProgress(); updateMeter();
 
@@ -393,7 +438,16 @@
       const li = cb.closest(".item"), i = li.dataset.i;
       const c = store.checks[cl.id] = store.checks[cl.id] || {};
       if (cb.checked) c[i] = true; else delete c[i];
-      li.classList.toggle("done", cb.checked); save(); updateProgress();
+      li.classList.toggle("done", cb.checked); updateProgress();
+      if (cb.checked) {
+        const d = doneCount(cl), n = cl.items.length;
+        if (d === n) celebrate("complete", { title: cl.title }, cb);
+        else if (n >= 6 && d === Math.ceil(n / 2)) celebrate("half", { title: cl.title }, cb);
+        else if (!store.seen.first) celebrate("first", {}, cb);
+        else celebrate("tick", {}, cb);
+        store.seen = Object.assign({}, store.seen, { first: true });
+      }
+      save();
     }));
     main.querySelectorAll(".more-btn").forEach(b => b.addEventListener("click", () => {
       const box = document.getElementById(b.getAttribute("aria-controls"));
@@ -402,10 +456,11 @@
     }));
     main.querySelector("#expandAll").addEventListener("click", e => {
       const btns = main.querySelectorAll(".more-btn");
-      const open = e.target.textContent.startsWith("Show");
+      const label = e.currentTarget.querySelector("span:last-child");
+      const open = label.textContent.startsWith("Show");
       btns.forEach(b => { b.setAttribute("aria-expanded", String(open)); document.getElementById(b.getAttribute("aria-controls")).hidden = !open; b.textContent = open ? "less" : "more"; });
       main.querySelector("#sec-why").open = open;
-      e.target.textContent = open ? "Hide details" : "Show all details";
+      label.textContent = open ? "Hide details" : "Show all details";
     });
     main.querySelectorAll(".cite").forEach(a => a.addEventListener("click", e => {
       e.preventDefault();
@@ -461,7 +516,7 @@
     document.title = "How the slop meter works · Music Teacher Checklists";
     const reviewed = CHECKLISTS.filter(c => slopOf(c) < 100).length;
     main.innerHTML = `<div class="prose">
-      <h1>How the AI slop meter works</h1>
+      <h1>${em(3, EMO.ui.about)}How the AI slop meter works</h1>
       <p>An AI (Claude) drafted every checklist, rationale, and source note on this site in October 2026. Drafts like that can sound confident and still be wrong, generic, or slightly off from what a source says. That's the "slop." The meter shows how much of each checklist a human has actually checked.</p>
       ${meterBig(siteSlop(), "Whole site right now")}
       <p>${reviewed} of ${CHECKLISTS.length} checklists have had at least one human check.</p>
@@ -491,10 +546,15 @@
       <h2>Evidence labels</h2>
       <ul>${Object.entries(EVID).map(([k, v]) => `<li><span class="ev ev-${k}">${esc(v.name)}</span>: ${esc(v.help)}</li>`).join("")}</ul>
 
+      <h2>${em(3, "🎉")}Emoji and celebrations</h2>
+      <p>Use <strong>Display</strong> at the top of any page to pick how many emoji you want, from <em>None whatsoever</em> to <em>There's no such thing as too many</em> (the default is <em>Tactful</em>). Emoji are decorative, so screen readers skip them.</p>
+      <p>Celebrations fire when you check your first box, reach the halfway point, finish a checklist, or lower a checklist's slop. Pick <em>Confetti</em>, <em>Quiet</em> (a message, nothing moves), or <em>Off</em>. If your device asks for reduced motion, you'll get the quiet version.</p>
+      <div class="btns"><button type="button" class="btn" id="tryCelebrate">${em(2, "🎊")}Try a celebration</button></div>
+
       <h2>Where reviews are saved</h2>
       <p>Checkmarks and reviews live in <strong>this browser only</strong> (localStorage). They don't sync to other devices or other people. To make a review permanent for everyone, use <em>Copy review for repo</em> on a checklist and paste it into the data file, or export everything below and send it to whoever maintains the site.</p>
       <div class="btns">
-        <button type="button" class="btn btn-primary" id="exportBtn">Export my reviews & checks</button>
+        <button type="button" class="btn btn-primary" id="exportBtn">${em(3, EMO.ui.export)}Export my reviews & checks</button>
         <label class="btn" for="importFile">Import…</label>
         <input type="file" id="importFile" accept="application/json,.json" class="visually-hidden">
         <button type="button" class="btn" id="clearAll">Clear everything in this browser</button>
@@ -517,10 +577,154 @@
     });
     main.querySelector("#clearAll").addEventListener("click", () => {
       if (confirm("Clear all checkmarks and reviews saved in this browser? This can't be undone.")) {
-        store = empty(); save(); toast("Cleared"); renderAbout();
+        const prefs = store.prefs;   // keep display settings
+        store = empty(); store.prefs = prefs; save(); toast("Cleared"); renderAbout();
       }
     });
+    main.querySelector("#tryCelebrate").addEventListener("click", e => celebrate("test", {}, e.currentTarget));
   }
+
+  /* ---------------- Celebrations ----------------
+     To add one: give it a key here, then call celebrate("key", data, originElement).
+     size: 0 = a single pop, 1 = small burst, 2 = medium, 3 = big.  */
+  const CELEBRATIONS = {
+    first:    { size: 1, emo: ["✅", "🎵"], msg: () => "First box checked. That's how it starts." },
+    tick:     { size: 0, silent: true },
+    half:     { size: 1, emo: ["🎶", "⛳"], msg: d => `Halfway through "${d.title}".` },
+    complete: { size: 3, emo: ["🎉", "🎺", "🥁", "🎊"], msg: d => `Checklist complete: ${d.title}` },
+    slop:     { size: 1, emo: ["🧹", "📉"], msg: d => `Slop down to ${d.slop}%. ${d.label}.` },
+    verified: { size: 3, emo: ["🏅", "🧑‍🏫", "🎉", "✨"], msg: d => `Human-verified! "${d.title}" is at 0% slop.` },
+    test:     { size: 2, emo: ["🎉", "🎶", "✨", "🎊"], msg: () => "This is what a celebration looks like." }
+  };
+  function reduceMotion() { return !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  function celebrate(kind, data, origin) {
+    const c = CELEBRATIONS[kind], mode = pref("celebrate");
+    if (!c || mode === "off") return;
+    if (!c.silent) {
+      const n = [0, 1, 1, 2, c.emo.length][lvl()];
+      toast((n ? c.emo.slice(0, n).join("") + " " : "") + c.msg(data || {}), "celebrate");
+    }
+    if (mode !== "confetti" || reduceMotion()) return;
+    if (c.size === 0) { if (lvl() >= 4) burst(1, origin); else if (lvl() >= 3) pop(origin); return; }
+    burst(c.size, origin);
+  }
+  function pop(origin) {
+    if (!origin) return;
+    const r = origin.getBoundingClientRect(), el = document.createElement("span");
+    el.className = "emo-pop"; el.setAttribute("aria-hidden", "true");
+    el.textContent = EMO.confetti[Math.floor(Math.random() * EMO.confetti.length)] || "✨";
+    el.style.left = `${r.left + r.width / 2}px`; el.style.top = `${r.top}px`;
+    document.body.appendChild(el); setTimeout(() => el.remove(), 900);
+  }
+
+  // A tiny confetti engine: one canvas, removed when the last particle lands.
+  let confetti = null;
+  function burst(size, origin) {
+    const counts = [0, 26, 70, 150], n = counts[size] || 26;
+    if (!confetti) {
+      const cv = document.createElement("canvas");
+      cv.className = "confetti"; cv.setAttribute("aria-hidden", "true");
+      document.body.appendChild(cv);
+      confetti = { cv, ctx: cv.getContext("2d"), parts: [], last: 0 };
+      const fit = () => {
+        const dpr = window.devicePixelRatio || 1;
+        cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+        confetti.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      fit(); confetti.fit = fit; addEventListener("resize", fit);
+      requestAnimationFrame(tickConfetti);
+    }
+    const r = origin && origin.getBoundingClientRect ? origin.getBoundingClientRect() : null;
+    const ox = r ? r.left + r.width / 2 : innerWidth / 2, oy = r ? r.top + r.height / 2 : innerHeight / 3;
+    const css = getComputedStyle(document.documentElement);
+    const colors = ["--accent", "--focus", "--slop-1", "--slop-2", "--slop-3", "--slop-4"].map(v => css.getPropertyValue(v).trim()).filter(Boolean);
+    const glyphShare = [0, 0, 0, .45, 1][lvl()];
+    for (let i = 0; i < n; i++) {
+      const big = size >= 3, a = big ? Math.random() * Math.PI * 2 : -Math.PI / 2 + (Math.random() - .5) * 2.2;
+      const v = (big ? 5 : 3.5) + Math.random() * (big ? 9 : 6);
+      confetti.parts.push({
+        x: big && i % 2 ? (i % 4 === 1 ? 0 : innerWidth) : ox, y: big && i % 2 ? innerHeight * .65 : oy,
+        vx: big && i % 2 ? (i % 4 === 1 ? 1 : -1) * (4 + Math.random() * 8) : Math.cos(a) * v,
+        vy: big && i % 2 ? -(9 + Math.random() * 8) : Math.sin(a) * v,
+        rot: Math.random() * 6, vr: (Math.random() - .5) * .35, life: 0, ttl: 90 + Math.random() * 70,
+        w: 6 + Math.random() * 6, h: 4 + Math.random() * 6, color: colors[i % colors.length] || "#c26a2e",
+        glyph: Math.random() < glyphShare ? EMO.confetti[i % EMO.confetti.length] : ""
+      });
+    }
+  }
+  function tickConfetti() {
+    const c = confetti; if (!c) return;
+    c.ctx.clearRect(0, 0, innerWidth, innerHeight);
+    c.parts = c.parts.filter(p => p.life < p.ttl && p.y < innerHeight + 40);
+    for (const p of c.parts) {
+      p.life++; p.vy += .28; p.vx *= .985; p.vy *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      c.ctx.save(); c.ctx.globalAlpha = Math.min(1, (p.ttl - p.life) / 30);
+      c.ctx.translate(p.x, p.y); c.ctx.rotate(p.rot);
+      if (p.glyph) { c.ctx.font = "22px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"; c.ctx.textAlign = "center"; c.ctx.fillText(p.glyph, 0, 0); }
+      else { c.ctx.fillStyle = p.color; c.ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+      c.ctx.restore();
+    }
+    if (c.parts.length) requestAnimationFrame(tickConfetti);
+    else { removeEventListener("resize", c.fit); c.cv.remove(); confetti = null; }
+  }
+
+  /* ---------------- Display panel (header) ---------------- */
+  const SAMPLES = { none: "", barely: "🎻", tactful: "🎻 🎉", plenty: "🎻 🎉 💡 👂", max: "🎻🎉✨🎶🌟🎺" };
+  function renderChrome() {
+    document.documentElement.dataset.emoji = pref("emoji");
+    document.querySelectorAll("[data-nav]").forEach(a => {
+      if (!a.dataset.label) a.dataset.label = a.textContent.trim();
+      a.innerHTML = em(3, EMO.ui[a.dataset.nav]) + esc(a.dataset.label);
+    });
+    const slot = document.getElementById("prefsSlot"); if (!slot) return;
+    const wasOpen = !!slot.querySelector(".prefs-panel:not([hidden])");
+    const cur = pref("emoji"), cm = pref("celebrate");
+    slot.innerHTML = `<div class="prefs">
+      <button type="button" class="prefs-btn" aria-expanded="${wasOpen}" aria-controls="prefsPanel">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+        ${em(4, EMO.ui.settings)}Display</button>
+      <div class="prefs-panel" id="prefsPanel" ${wasOpen ? "" : "hidden"}>
+        <fieldset>
+          <legend>Emoji</legend>
+          ${EMO.levels.map(l => `<label class="opt">
+            <input type="radio" name="emoji" value="${l.id}" ${l.id === cur ? "checked" : ""}>
+            <span class="opt-text"><strong>${esc(l.name)}${l.id === EMO.defaultLevel ? " (default)" : ""}</strong><span class="small muted">${esc(l.help || "")}</span></span>
+            ${cur === "none" ? "" : `<span class="opt-sample" aria-hidden="true">${SAMPLES[l.id] || ""}</span>`}
+          </label>`).join("")}
+        </fieldset>
+        <fieldset>
+          <legend>Celebrations</legend>
+          ${CELEB_MODES.map(m => `<label class="opt">
+            <input type="radio" name="celebrate" value="${m.id}" ${m.id === cm ? "checked" : ""}>
+            <span class="opt-text"><strong>${esc(m.name)}${m.id === "confetti" ? " (default)" : ""}</strong><span class="small muted">${esc(m.help)}</span></span>
+          </label>`).join("")}
+          ${reduceMotion() ? `<p class="small muted">Your device asks for reduced motion, so confetti stays quiet.</p>` : ""}
+          <button type="button" class="btn" id="prefsTry">${em(2, "🎊")}Try a celebration</button>
+        </fieldset>
+      </div>
+    </div>`;
+    const btn = slot.querySelector(".prefs-btn"), panel = slot.querySelector(".prefs-panel");
+    btn.addEventListener("click", () => {
+      const open = panel.hidden; panel.hidden = !open; btn.setAttribute("aria-expanded", String(open));
+    });
+    slot.querySelectorAll("input[name=emoji]").forEach(r => r.addEventListener("change", () => {
+      setPref("emoji", r.value); renderChrome(); route(true);
+      const again = slot.querySelector(`input[name=emoji][value="${r.value}"]`); if (again) again.focus();
+    }));
+    slot.querySelectorAll("input[name=celebrate]").forEach(r => r.addEventListener("change", () => {
+      setPref("celebrate", r.value);
+      if (r.value !== "off") celebrate("test", {}, r);
+    }));
+    slot.querySelector("#prefsTry").addEventListener("click", e => celebrate("test", {}, e.currentTarget));
+  }
+  document.addEventListener("click", e => {
+    const slot = document.getElementById("prefsSlot"), panel = slot && slot.querySelector(".prefs-panel");
+    if (panel && !panel.hidden && !slot.contains(e.target)) { panel.hidden = true; slot.querySelector(".prefs-btn").setAttribute("aria-expanded", "false"); }
+  });
+  document.addEventListener("keydown", e => {
+    const slot = document.getElementById("prefsSlot"), panel = slot && slot.querySelector(".prefs-panel");
+    if (e.key === "Escape" && panel && !panel.hidden) { panel.hidden = true; const b = slot.querySelector(".prefs-btn"); b.setAttribute("aria-expanded", "false"); b.focus(); }
+  });
 
   window.addEventListener("beforeprint", () => {
     document.querySelectorAll("details.section:not(.review-section)").forEach(d => { d.open = true; });
@@ -535,5 +739,6 @@
     if (!catById[cl.cat]) console.warn(`[${cl.id}] unknown category: ${cl.cat}`);
   });
 
+  renderChrome();
   route();
 })();

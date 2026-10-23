@@ -8,6 +8,7 @@
 {
   id: "choosing-rep",
   title: "Choosing repertoire for an ensemble",
+  emoji: "📚",
   cat: "rep", aud: ["secondary", "college", "elementary"], tags: ["choir", "band", "orchestra", "planning"],
   evidence: "mixed",
   summary: "What will students learn from this piece? Can these students sing or play it in the time you have? Would you be proud of it in ten years?",
@@ -39,6 +40,7 @@
 {
   id: "rep-other-cultures",
   title: "Programming music from a culture that isn't yours",
+  emoji: "🌏",
   cat: "rep", aud: ["elementary", "secondary", "college", "preschool"], tags: ["equity", "culture", "choir", "world music"],
   evidence: "practice",
   summary: "Context, consultation, credit, and care. Not a costume, not a token closer.",
@@ -65,6 +67,7 @@
 {
   id: "running-rehearsal",
   title: "Running a rehearsal",
+  emoji: "🎼",
   cat: "rehearsal", aud: ["secondary", "college", "elementary"], tags: ["choir", "band", "orchestra", "pacing", "feedback"],
   evidence: "research",
   summary: "Less talking, more playing. Every stop has a purpose, then back to music fast.",
@@ -98,6 +101,7 @@
 {
   id: "rehearsal-planning",
   title: "Planning a rehearsal (score study → plan)",
+  emoji: "🗒️",
   cat: "rehearsal", aud: ["secondary", "college"], tags: ["score study", "planning", "choir", "band", "orchestra"],
   evidence: "mixed",
   summary: "Know the score cold, predict the problems, and budget the minutes.",
@@ -122,6 +126,7 @@
 {
   id: "teaching-practice",
   title: "Teaching students how to practice",
+  emoji: "⏱️",
   cat: "rehearsal", aud: ["studio", "secondary", "college", "elementary"], tags: ["practice", "motivation", "studio"],
   evidence: "research",
   summary: "Count correct repetitions, not minutes. Fix errors early and precisely.",
@@ -152,6 +157,7 @@
 {
   id: "sectionals",
   title: "Running a sectional or coaching chamber music",
+  emoji: "🎻",
   cat: "rehearsal", aud: ["secondary", "college", "ta"], tags: ["sectionals", "chamber music", "student leaders", "TA"],
   evidence: "practice",
   summary: "A sectional without a goal is just a hangout with instruments.",
@@ -178,6 +184,7 @@
 {
   id: "concert-program",
   title: "Making a concert program",
+  emoji: "📜",
   cat: "concerts", aud: ["elementary", "secondary", "college", "studio", "preschool"], tags: ["programs", "accessibility", "writing", "copyright"],
   evidence: "mixed",
   summary: "Accurate, credited, accessible, proofread by a second human, with short notes.",
@@ -208,6 +215,7 @@
 {
   id: "concert-day",
   title: "Concert day run-of-show",
+  emoji: "🎭",
   cat: "concerts", aud: ["elementary", "secondary", "college", "studio"], tags: ["concerts", "logistics", "supervision"],
   evidence: "practice",
   summary: "Call times, supervision, the script, and the strike. Assume nothing.",
@@ -236,6 +244,7 @@
 {
   id: "concert-recording",
   title: "Recording, streaming, or selling a concert",
+  emoji: "🎙️",
   cat: "concerts", aud: ["secondary", "college", "studio", "admin"], tags: ["copyright", "licensing", "streaming", "recording"],
   evidence: "standard",
   summary: "Performing live and distributing a recording are different legal acts. Plan licenses before the concert.",
@@ -265,6 +274,7 @@
 {
   id: "fair-auditions",
   title: "Running fair auditions & seating",
+  emoji: "⚖️",
   cat: "assessment", aud: ["secondary", "college", "admin"], tags: ["auditions", "bias", "equity", "rubrics"],
   evidence: "research",
   summary: "Hide what you can, define criteria first, randomize order, and use more than one judge.",
@@ -299,6 +309,7 @@
 {
   id: "jury-day",
   title: "Applied jury day (for faculty panels)",
+  emoji: "🧑‍⚖️",
   cat: "assessment", aud: ["college", "admin", "ta"], tags: ["juries", "applied lessons", "rubrics", "bias"],
   evidence: "research",
   summary: "Same rubric, calibrated panel, randomized order, food in the room, and written feedback students can use.",
@@ -328,6 +339,7 @@
 {
   id: "ensemble-grading",
   title: "Grading in performance ensembles",
+  emoji: "📊",
   cat: "assessment", aud: ["secondary", "college"], tags: ["grading", "assessment", "rubrics", "choir", "band", "orchestra"],
   evidence: "research",
   summary: "Grade musical learning, not just attendance and attitude, and use more than one kind of evidence.",
@@ -357,6 +369,7 @@
 {
   id: "ensemble-trip",
   title: "Planning an ensemble trip",
+  emoji: "🚌",
   cat: "logistics", aud: ["secondary", "college", "admin"], tags: ["trips", "supervision", "logistics", "safety"],
   evidence: "practice",
   summary: "Approvals, money, medical, supervision, and a plan for when the bus breaks down.",
@@ -383,6 +396,7 @@
 {
   id: "instrument-inventory",
   title: "Instrument inventory, checkout & repair",
+  emoji: "📦",
   cat: "logistics", aud: ["elementary", "secondary", "college"], tags: ["instruments", "inventory", "budget"],
   evidence: "practice",
   summary: "Serial numbers, signed agreements, a repair budget, and hygiene for shared instruments.",
@@ -405,6 +419,7 @@
 {
   id: "end-of-year",
   title: "End-of-year wrap-up",
+  emoji: "🏁",
   cat: "logistics", aud: ["elementary", "secondary", "college", "studio"], tags: ["planning", "inventory", "families"],
   evidence: "practice",
   summary: "Collect, file, thank, and write down next year's calendar while you still remember.",

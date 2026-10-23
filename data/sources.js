@@ -7,7 +7,13 @@
   supports the claim a checklist makes. Humans do that part in the app.
 
   kind: study | meta-analysis | review | replication | critique | law | government |
-        guideline | organization | article | chapter | manufacturer | resource
+        guideline | organization | article | chapter | book | manufacturer | resource
+
+  Sources added 2026-10-23 were checked by web search only (Crossref and doi.org
+  were unreachable from the drafting environment). Titles, authors, journals,
+  volumes, and pages were confirmed in search results. Three DOIs did not appear
+  in those results and are marked "DOI not seen in search" below. Run
+  tools/check-links.mjs to resolve them.
 
   To record that a human opened a link, set  humanLinkCheck: "initials, YYYY-MM-DD"
 */
@@ -448,5 +454,195 @@ window.MTC_SOURCES = {
   irsSelf: {
     cite: "Internal Revenue Service. Self-Employed Individuals Tax Center.",
     url: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employed-individuals-tax-center", kind: "government"
+  },
+  // ---------- Added 2026-10-23: NASM & accreditation ----------
+  nasmHandbookNotice: {
+    cite: "National Association of Schools of Music. Current Notice: NASM Handbook 2025-26 Published (supersedes all previous editions).",
+    url: "https://nasm.arts-accredit.org/about/current-notices/current-notice-nasm-handbook-published/", kind: "organization"
+  },
+  nasmVisitors: {
+    cite: "National Association of Schools of Music. Procedures for Comprehensive Review: Procedures for Visiting Evaluators.",
+    url: "https://nasm.arts-accredit.org/accreditation/procedures-for-comprehensive-review/procedures-for-visiting-evaluators/", kind: "guideline"
+  },
+  nasmHeads: {
+    cite: "National Association of Schools of Music. Annual Reporting Requirements: HEADS Data Survey (launched November 1, due January 31).",
+    url: "https://nasm.arts-accredit.org/accreditation/responsibilities/annual-reporting-requirements/heads", kind: "guideline"
+  },
+
+  // ---------- Added 2026-10-23: health & wellness ----------
+  kok2016: {
+    cite: "Kok, L. M., Huisstede, B. M. A., Voorn, V. M. A., Schoones, J. W., & Nelissen, R. G. H. H. (2016). The occurrence of musculoskeletal complaints among professional musicians: A systematic review. International Archives of Occupational and Environmental Health, 89(3), 373–396.",
+    url: "https://doi.org/10.1007/s00420-015-1090-6", kind: "review"
+  },
+  zaza1998: {
+    cite: "Zaza, C. (1998). Playing-related musculoskeletal disorders in musicians: A systematic review of incidence and prevalence. CMAJ, 158(8), 1019–1025.",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC1229223/", kind: "review"
+  },
+  perkins2017: {
+    cite: "Perkins, R., Reid, H., Araújo, L. S., Clark, T., & Williamon, A. (2017). Perceived enablers and barriers to optimal health among music students: A qualitative study in the music conservatoire setting. Frontiers in Psychology, 8, 968.",
+    url: "https://doi.org/10.3389/fpsyg.2017.00968", kind: "study"
+  },
+  paruthi2016: {
+    // DOI not seen in search; citation details were.
+    cite: "Paruthi, S., Brooks, L. J., D'Ambrosio, C., et al. (2016). Recommended amount of sleep for pediatric populations: A consensus statement of the American Academy of Sleep Medicine. Journal of Clinical Sleep Medicine, 12(6), 785–786.",
+    url: "https://doi.org/10.5664/jcsm.5866", kind: "guideline"
+  },
+  pag2018: {
+    cite: "U.S. Department of Health and Human Services (2018). Physical Activity Guidelines for Americans, 2nd edition: Executive Summary.",
+    url: "https://health.gov/sites/default/files/2019-10/PAG_ExecutiveSummary.pdf", kind: "government"
+  },
+  casa2015: {
+    cite: "Casa, D. J., DeMartini, J. K., Bergeron, M. F., et al. (2015). National Athletic Trainers' Association position statement: Exertional heat illnesses. Journal of Athletic Training, 50(9), 986–1000.",
+    url: "https://doi.org/10.4085/1062-6050-50.9.07", kind: "guideline"
+  },
+  ksiCooling: {
+    cite: "Korey Stringer Institute, University of Connecticut. Cold Water Immersion Guide (\"cool first, transport second\").",
+    url: "https://koreystringer-institute.media.uconn.edu/wp-content/uploads/sites/3814/2024/08/ColdWaterImmersionGuide_ResourceUpdate_8.pdf", kind: "guideline"
+  },
+  rand2025: {
+    cite: "RAND Corporation. Teacher Well-Being, Pay, and Intentions to Leave in 2025: Findings from the State of the American Teacher Survey.",
+    url: "https://www.rand.org/education-employment-infrastructure/survey-panels/aep/surveys/items/state-of-the-american-teacher-survey-winter-2025.html", kind: "study"
+  },
+  grieving: {
+    cite: "Coalition to Support Grieving Students. Free training modules for educators (conversation and support, what not to say, support over time, self-care).",
+    url: "https://grievingstudents.org/modules/", kind: "organization"
+  },
+  henderlong2002: {
+    cite: "Henderlong, J., & Lepper, M. R. (2002). The effects of praise on children's intrinsic motivation: A review and synthesis. Psychological Bulletin, 128(5), 774–795.",
+    url: "https://doi.org/10.1037/0033-2909.128.5.774", kind: "review"
+  },
+  mueller1998: {
+    cite: "Mueller, C. M., & Dweck, C. S. (1998). Praise for intelligence can undermine children's motivation and performance. Journal of Personality and Social Psychology, 75(1), 33–52.",
+    url: "https://doi.org/10.1037/0022-3514.75.1.33", kind: "study"
+  },
+  li2019: {
+    cite: "Li, Y., & Bates, T. C. (2019). You can't change your basic ability, but you work at things, and that's how we get hard things done: Testing the role of growth mindset on response to setbacks, educational attainment, and cognitive ability. Journal of Experimental Psychology: General, 148(9), 1640–1655.",
+    url: "https://doi.org/10.1037/xge0000669", kind: "replication"
+  },
+
+  // ---------- Added 2026-10-23: new faculty & first-year students ----------
+  boice1989: {
+    // DOI not seen in search; citation details and abstract were.
+    cite: "Boice, R. (1989). Procrastination, busyness and bingeing. Behaviour Research and Therapy, 27(6), 605–611.",
+    url: "https://doi.org/10.1016/0005-7967(89)90144-7", kind: "study"
+  },
+  eby2008: {
+    cite: "Eby, L. T., Allen, T. D., Evans, S. C., Ng, T., & DuBois, D. L. (2008). Does mentoring matter? A multidisciplinary meta-analysis comparing mentored and non-mentored individuals. Journal of Vocational Behavior, 72(2), 254–267.",
+    url: "https://doi.org/10.1016/j.jvb.2007.04.005", kind: "meta-analysis"
+  },
+  walton2011: {
+    cite: "Walton, G. M., & Cohen, G. L. (2011). A brief social-belonging intervention improves academic and health outcomes of minority students. Science, 331(6023), 1447–1451.",
+    url: "https://doi.org/10.1126/science.1198364", kind: "study"
+  },
+  yeager2016: {
+    cite: "Yeager, D. S., Walton, G. M., Brady, S. T., et al. (2016). Teaching a lay theory before college narrows achievement gaps at scale. PNAS, 113(24), E3341–E3348.",
+    url: "https://doi.org/10.1073/pnas.1524360113", kind: "study"
+  },
+
+  // ---------- Added 2026-10-23: autistic students & sensory access ----------
+  hume2021: {
+    cite: "Hume, K., Steinbrenner, J. R., Odom, S. L., et al. (2021). Evidence-based practices for children, youth, and young adults with autism: Third generation review. Journal of Autism and Developmental Disorders, 51(11), 4013–4032.",
+    url: "https://doi.org/10.1007/s10803-020-04844-2", kind: "review"
+  },
+  kenny2016: {
+    cite: "Kenny, L., Hattersley, C., Molins, B., Buckley, C., Povey, C., & Pellicano, E. (2016). Which terms should be used to describe autism? Perspectives from the UK autism community. Autism, 20(4), 442–462.",
+    url: "https://doi.org/10.1177/1362361315588200", kind: "study"
+  },
+  milton2012: {
+    // DOI not seen in search; citation details were.
+    cite: "Milton, D. E. M. (2012). On the ontological status of autism: The 'double empathy problem'. Disability & Society, 27(6), 883–887.",
+    url: "https://doi.org/10.1080/09687599.2012.710008", kind: "article"
+  },
+  hull2017: {
+    cite: "Hull, L., Petrides, K. V., Allison, C., Smith, P., Baron-Cohen, S., Lai, M.-C., & Mandy, W. (2017). \"Putting on my best normal\": Social camouflaging in adults with autism spectrum conditions. Journal of Autism and Developmental Disorders, 47(8), 2519–2534.",
+    url: "https://doi.org/10.1007/s10803-017-3166-5", kind: "study"
+  },
+  williams2021: {
+    cite: "Williams, Z. J., Suzman, E., & Woynaroski, T. G. (2021). Prevalence of decreased sound tolerance (hyperacusis) in individuals with autism spectrum disorder: A meta-analysis. Ear and Hearing, 42(5), 1137–1150.",
+    url: "https://doi.org/10.1097/AUD.0000000000001005", kind: "meta-analysis"
+  },
+  geretsegger2022: {
+    cite: "Geretsegger, M., Fusar-Poli, L., Elefant, C., Mössler, K. A., Vitale, G., & Gold, C. (2022). Music therapy for autistic people. Cochrane Database of Systematic Reviews, 2022(5), CD004381.",
+    url: "https://doi.org/10.1002/14651858.CD004381.pub4", kind: "review"
+  },
+  hammel2020: {
+    cite: "Hammel, A. M., & Hourigan, R. M. (2020). Teaching Music to Students with Autism (2nd ed.). Oxford University Press.",
+    url: "https://global.oup.com/academic/product/teaching-music-to-students-with-autism-9780190063177", kind: "book"
+  },
+  pittsburghSensory: {
+    cite: "Pittsburgh Symphony Orchestra. Sensory-friendly concerts (pre-visit story, playlist, and introductory videos).",
+    url: "https://pittsburghsymphony.org/accessibility/sensory_friendly", kind: "resource"
+  },
+  mnorchSensory: {
+    cite: "Minnesota Orchestra. Making Space for Neurodiversity: Exploring Relaxed and Sensory-Friendly Programming.",
+    url: "https://www.minnesotaorchestra.org/stories/making-space-for-neurodiversity-exploring-relaxed-and-sensory-friendly-programming", kind: "resource"
+  },
+
+  // ---------- Added 2026-10-23: stalking & student safety ----------
+  sparc: {
+    cite: "Stalking Prevention, Awareness, and Resource Center (SPARC), funded by the U.S. DOJ Office on Violence Against Women.",
+    url: "https://www.stalkingawareness.org/", kind: "organization"
+  },
+  sparcLog: {
+    cite: "SPARC (2018). Stalking Incident and Behavior Log, with instructions.",
+    url: "https://www.stalkingawareness.org/wp-content/uploads/2018/07/SPARC_StalkingLogInstructions_2018_FINAL.pdf", kind: "resource"
+  },
+  logan2017: {
+    cite: "Logan, T. K., & Walker, R. (2017). Stalking: A multidimensional framework for assessment and safety planning. Trauma, Violence, & Abuse, 18(2), 200–222.",
+    url: "https://doi.org/10.1177/1524838015603210", kind: "review"
+  },
+  victimconnect: {
+    cite: "VictimConnect Resource Center (call or text 1-855-484-2846; weekdays; English and Spanish, interpreters for 200+ languages).",
+    url: "https://victimconnect.org/", kind: "resource"
+  },
+  loveisrespect: {
+    cite: "love is respect: dating-abuse support for young people (text LOVEIS to 22522, or call 1-866-331-9474).",
+    url: "https://www.loveisrespect.org/", kind: "resource"
+  },
+  womenslaw: {
+    cite: "WomensLaw.org (National Network to End Domestic Violence). State-by-state legal information, including protective and stalking orders.",
+    url: "https://www.womenslaw.org/", kind: "resource"
+  },
+  clery: {
+    cite: "Clery Center. Policy history: VAWA amendments added stalking, dating violence, and domestic violence to the Clery Act.",
+    url: "https://clerycenter.org/policy-history", kind: "organization"
+  },
+
+  // ---------- Added 2026-10-23: English learners & multilingual families ----------
+  wida2020: {
+    cite: "WIDA (2020). WIDA English Language Development Standards Framework, 2020 Edition (six proficiency levels).",
+    url: "https://wida.wisc.edu/2020standards", kind: "guideline"
+  },
+  hakuta2000: {
+    cite: "Hakuta, K., Butler, Y. G., & Witt, D. (2000). How long does it take English learners to attain proficiency? University of California Linguistic Minority Research Institute, Policy Report 2000-1.",
+    url: "https://web.stanford.edu/~hakuta/Publications/(2000)%20-%20HOW%20LONG%20DOES%20IT%20TAKE%20ENGLISH%20LEARNERS%20TO%20ATTAIN%20PR.pdf", kind: "study"
+  },
+  ludke2014: {
+    cite: "Ludke, K. M., Ferreira, F., & Overy, K. (2014). Singing can facilitate foreign language learning. Memory & Cognition, 42(1), 41–52.",
+    url: "https://doi.org/10.3758/s13421-013-0342-5", kind: "study"
+  },
+  abril2003: {
+    cite: "Abril, C. R. (2003). No hablo inglés: Breaking the language barrier in music instruction. Music Educators Journal, 89(5), 38–43.",
+    url: "https://doi.org/10.2307/3399918", kind: "article"
+  },
+  colorinMusic: {
+    cite: "Colorín Colorado. Tips for Music Educators: Teaching English Language Learners.",
+    url: "https://www.colorincolorado.org/node/70240", kind: "resource"
+  },
+  nafmeEll: {
+    cite: "National Association for Music Education. Rethinking Practices to Better Aid English (as a New Language) Learners in the Elementary General Music Classroom.",
+    url: "https://nafme.org/blog/rethinking-practices-to-better-aid-english-as-a-new-language-learners-in-the-elementary-general-music-classroom", kind: "article"
+  },
+  lau1974: {
+    cite: "Lau v. Nichols, 414 U.S. 563 (1974).",
+    url: "https://supreme.justia.com/cases/federal/us/414/563/", kind: "law"
+  },
+  dcl2015: {
+    cite: "U.S. Department of Justice & U.S. Department of Education (2015, January 7). Dear Colleague Letter: English Learner Students and Limited English Proficient Parents. (Rescinded by the Department of Education in August 2025.)",
+    url: "https://www.colorincolorado.org/node/62379", kind: "government"
+  },
+  idra2025: {
+    cite: "Craven, M. (2025, October 9). Still Required: Protecting English Learners in Our Schools. IDRA (on the August 2025 rescission of the 2015 federal EL guidance, and the obligations under Title VI, Lau, and the EEOA that remain).",
+    url: "https://www.idra.org/resource-center/still-required-protecting-english-learners-in-our-schools/", kind: "article"
   }
 };

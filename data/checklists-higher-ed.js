@@ -8,6 +8,7 @@
 {
   id: "ta-first-semester",
   title: "TA: your first semester teaching",
+  emoji: "📝",
   cat: "higher", aud: ["ta", "college"], tags: ["TA", "FERPA", "Title IX", "active learning", "boundaries"],
   evidence: "mixed",
   summary: "Know the rules (FERPA, Title IX, accommodations), teach actively, and protect your own degree.",
@@ -37,6 +38,7 @@
 {
   id: "recommendation-letter",
   title: "Writing a recommendation letter",
+  emoji: "✉️",
   cat: "higher", aud: ["college", "studio", "secondary", "admin", "ta"], tags: ["letters", "bias", "writing", "careers"],
   evidence: "research",
   summary: "Specific, comparative, achievement-focused, and audited for gendered language.",
@@ -66,6 +68,7 @@
 {
   id: "chair-first-90-days",
   title: "New department chair: first 90 days",
+  emoji: "🪑",
   cat: "leadership", aud: ["admin", "college"], tags: ["department chair", "leadership", "accreditation", "governance"],
   evidence: "mixed",
   summary: "Listen before you change things. Learn the money, the calendar, accreditation, and the people.",
@@ -98,6 +101,7 @@
 {
   id: "faculty-search",
   title: "Running a faculty search",
+  emoji: "🔎",
   cat: "leadership", aud: ["admin", "college"], tags: ["hiring", "search committee", "bias", "interviews"],
   evidence: "research",
   summary: "Criteria first, structured interviews, real work samples, independent scoring, then discussion.",
@@ -130,6 +134,7 @@
 {
   id: "evaluating-teaching",
   title: "Evaluating teaching fairly (annual review, tenure, promotion)",
+  emoji: "📈",
   cat: "leadership", aud: ["admin", "college"], tags: ["evaluation", "tenure", "bias", "student evaluations"],
   evidence: "research",
   summary: "Never rely on student evaluations alone. Use multiple measures and written criteria.",
@@ -154,6 +159,7 @@
 {
   id: "running-meetings",
   title: "Running a meeting people don't hate",
+  emoji: "⏰",
   cat: "leadership", aud: ["admin", "college", "secondary", "elementary"], tags: ["meetings", "leadership"],
   evidence: "research",
   summary: "Purpose, agenda, short, decisions recorded, and snacks if it's near a meal.",
@@ -178,6 +184,7 @@
 {
   id: "area-director",
   title: "Area director (vocal, choral, instrumental, keyboard…)",
+  emoji: "🗺️",
   cat: "leadership", aud: ["admin", "college"], tags: ["area director", "choral", "vocal", "scheduling", "studio assignments"],
   evidence: "mixed",
   summary: "Coordinate the calendar, make studio assignments transparent, and keep students healthy and fairly judged.",
@@ -209,6 +216,7 @@
 {
   id: "dean-provost-president",
   title: "Dean, provost, or president: supporting the music unit",
+  emoji: "🏛️",
   cat: "leadership", aud: ["admin"], tags: ["dean", "provost", "president", "budget", "facilities", "accreditation"],
   evidence: "mixed",
   summary: "Show up, learn what's different about music (one-on-one teaching, facilities, health), and advocate honestly.",

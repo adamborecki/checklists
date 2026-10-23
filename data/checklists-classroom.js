@@ -13,6 +13,7 @@
 {
   id: "orff-instrument-care",
   title: "Setting up & caring for Orff instruments",
+  emoji: "🧰",
   cat: "orff", aud: ["elementary", "preschool"], tags: ["orff", "instruments", "room setup"],
   evidence: "mixed",
   summary: "Barred instruments are a five-figure investment. Most damage comes from storage, mallets, and things piled on top.",
@@ -45,6 +46,7 @@
 {
   id: "orff-teaching-a-piece",
   title: "Teaching a new Orff arrangement (the elemental process)",
+  emoji: "🎶",
   cat: "orff", aud: ["elementary"], tags: ["orff", "lesson planning", "improvisation", "general music"],
   evidence: "practice",
   summary: "Speech → body percussion → unpitched → barred instruments → create. Layer one part at a time.",
@@ -73,6 +75,7 @@
 {
   id: "orff-hearing",
   title: "Protecting ears in a loud music room",
+  emoji: "👂",
   cat: "orff", aud: ["elementary", "secondary", "college", "admin"], tags: ["hearing", "health", "self-care"],
   evidence: "research",
   summary: "Your daily dose adds up across back-to-back classes. Measure it, then reduce it.",
@@ -102,6 +105,7 @@
 {
   id: "elementary-lesson-plan",
   title: "Planning a 30-minute elementary general music lesson",
+  emoji: "🍎",
   cat: "orff", aud: ["elementary"], tags: ["general music", "lesson planning", "first-year teacher"],
   evidence: "mixed",
   summary: "One clear goal, lots of music-making, a routine opening and closing, and a quick check for learning.",
@@ -135,6 +139,7 @@
 {
   id: "early-session",
   title: "Planning an early childhood music session",
+  emoji: "🧸",
   cat: "early", aud: ["preschool"], tags: ["early childhood", "lesson planning", "movement", "families"],
   evidence: "research",
   summary: "Active, playful, repetitive, short segments, and caregivers included where you can.",
@@ -171,6 +176,7 @@
 {
   id: "early-song-choice",
   title: "Choosing songs for young voices",
+  emoji: "🎈",
   cat: "early", aud: ["preschool", "elementary"], tags: ["early childhood", "singing", "repertoire"],
   evidence: "mixed",
   summary: "Small range, mid tessitura, short repeated phrases, and texts worth singing.",
@@ -198,6 +204,7 @@
 {
   id: "crying-student",
   title: "A student is crying (in class, a lesson, or your office)",
+  emoji: "🫂",
   cat: "students", aud: ["elementary", "secondary", "college", "studio", "ta"], tags: ["crisis", "mental health", "first-year teacher", "relationships"],
   evidence: "standard",
   summary: "Calm, private-but-visible, listen first, and know when a conversation becomes a referral or a report.",
@@ -240,6 +247,7 @@
 {
   id: "performance-anxiety",
   title: "Helping a student with performance anxiety",
+  emoji: "😰",
   cat: "students", aud: ["secondary", "college", "studio", "ta"], tags: ["mental health", "performance", "juries"],
   evidence: "research",
   summary: "Normalize it, prepare thoroughly, practice performing, and refer when it's more than nerves.",
@@ -267,6 +275,7 @@
 {
   id: "student-wants-to-quit",
   title: "A student wants to quit",
+  emoji: "🚪",
   cat: "students", aud: ["secondary", "studio", "elementary", "college"], tags: ["motivation", "retention", "families"],
   evidence: "research",
   summary: "Find out which need is going unmet (competence, connection, or choice) before you try to talk them out of it.",
@@ -294,6 +303,7 @@
 {
   id: "changing-voices",
   title: "Working with changing adolescent voices",
+  emoji: "🎤",
   cat: "students", aud: ["secondary"], tags: ["choir", "voice", "middle school"],
   evidence: "mixed",
   summary: "Voice change is normal, ongoing, and happens to everyone. Assign parts by range, not labels.",
@@ -321,6 +331,7 @@
 {
   id: "first-week",
   title: "First week of school in the music room",
+  emoji: "🏫",
   cat: "classroom", aud: ["elementary", "secondary"], tags: ["classroom management", "first-year teacher", "routines"],
   evidence: "research",
   summary: "Teach routines like you teach music: model, practice, feedback, repeat. And make music on day one.",
@@ -349,6 +360,7 @@
 {
   id: "iep-504",
   title: "Including a student with an IEP or 504 plan",
+  emoji: "🧩",
   cat: "classroom", aud: ["elementary", "secondary", "preschool"], tags: ["inclusion", "special education", "law", "equity"],
   evidence: "standard",
   summary: "Accommodations apply in music, too. Read the plan, ask questions, and design for everyone.",
@@ -376,6 +388,7 @@
 {
   id: "sub-plans",
   title: "Leaving sub plans for a music class",
+  emoji: "📋",
   cat: "classroom", aud: ["elementary", "secondary"], tags: ["substitutes", "planning", "first-year teacher"],
   evidence: "practice",
   summary: "Assume the sub can't read music and shouldn't touch the instruments. Plan accordingly.",
