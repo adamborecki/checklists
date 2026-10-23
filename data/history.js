@@ -90,6 +90,6 @@ window.MTC_HISTORY = [
       "Simplified the welcome to \"Adam and Billy's checklists,\" moved the slop meter out of the spotlight into each checklist's review section, and renamed the 'Slop meter' page to About.",
       "Added this History page."
     ],
-    commits: []
+    commits: ["b701f2a"]
   }
 ];
