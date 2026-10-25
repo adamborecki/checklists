@@ -4,6 +4,7 @@
 
   const CATS = window.MTC_CATEGORIES || [];
   const AUDS = window.MTC_AUDIENCES || [];
+  const FMTS = window.MTC_FORMATS || [];
   const EVID = window.MTC_EVIDENCE || {};
   const SOURCES = window.MTC_SOURCES || {};
   const EMO = window.MTC_EMOJI || { levels: [{ id: "none", name: "None" }], defaultLevel: "none", ui: {}, evidence: {}, slop: {}, keywords: [], fallback: [], sparkle: [], confetti: [] };
@@ -13,13 +14,14 @@
   const REPO = "https://github.com/adamborecki/checklists";
   const catById = Object.fromEntries(CATS.map(c => [c.id, c]));
   const audById = Object.fromEntries(AUDS.map(a => [a.id, a]));
+  const fmtById = Object.fromEntries(FMTS.map(f => [f.id, f]));
   const clById = Object.fromEntries(CHECKLISTS.map(c => [c.id, c]));
   const catOrder = Object.fromEntries(CATS.map((c, i) => [c.id, i]));
   const main = document.getElementById("main");
 
   /* ---------------- Storage (localStorage, wrapped) ---------------- */
   const LS_KEY = "mtc.v1";
-  const empty = () => ({ checks: {}, reviews: {}, links: {}, prefs: {}, seen: {} });
+  const empty = () => ({ checks: {}, reviews: {}, links: {}, favs: {}, prefs: {}, seen: {} });
   let store = empty();
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -31,11 +33,21 @@
   }
 
   /* ---------------- Display preferences: emoji level & celebrations ---------------- */
-  const CELEB_MODES = [
-    { id: "confetti", name: "Confetti", help: "A message and a burst of confetti when you finish things." },
-    { id: "quiet",    name: "Quiet",    help: "Just a message. Nothing moves." },
-    { id: "off",      name: "Off",      help: "No celebrations." }
+  // Celebration styles. Each one randomizes itself every time it plays.
+  const STYLES = [
+    { id: "confetti",  icon: "🎊", name: "Confetti",        help: "Paper confetti bursts out. Big wins fire from both sides." },
+    { id: "fireworks", icon: "🎆", name: "Fireworks",       help: "Rockets launch and burst: rings, willows, crossettes." },
+    { id: "balloons",  icon: "🎈", name: "Balloons",        help: "A bunch of balloons floats up past you." },
+    { id: "notes",     icon: "🎶", name: "Music notes",     help: "Notes drift up and away, swaying as they go." },
+    { id: "sparkles",  icon: "✨", name: "Sparkles",        help: "A twinkling starburst, with stray sparkles for big wins." },
+    { id: "shower",    icon: "🎏", name: "Confetti shower", help: "Paper and streamers rain down from the top, blown by the wind." },
+    { id: "bubbles",   icon: "🫧", name: "Bubbles",         help: "Bubbles wobble up and pop." }
   ];
+  const CELEB_MODES = STYLES.concat([
+    { id: "random", icon: "🎲", name: "Surprise me",  help: "A different style every time." },
+    { id: "quiet",  icon: "🔕", name: "Quiet",        help: "Just a message. Nothing moves." },
+    { id: "off",    icon: "",   name: "Off",          help: "No celebrations at all." }
+  ]);
   const levelIds = EMO.levels.map(l => l.id);
   function pref(k) {
     const p = store.prefs || {};
@@ -194,11 +206,49 @@
   function evHtml(ev) { return `${em(3, EMO.evidence[ev])}${esc(evLabel(ev))}`; }
   function catHtml(c, min) { return `${em(min, c.emoji)}${esc(c.name || c.id)}`; }
 
+  /* ---------------- Favorites (hearts) ---------------- */
+  // An SVG, not an emoji, so hearts still show at "None whatsoever".
+  function heartIcon(on) {
+    return `<svg class="heart${on ? " on" : ""}" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M12 20.3l-1.3-1.2C5.6 14.5 2.5 11.7 2.5 8.2 2.5 5.4 4.7 3.2 7.5 3.2c1.6 0 3.1.7 4.5 2.2 1.4-1.5 2.9-2.2 4.5-2.2 2.8 0 5 2.2 5 5 0 3.5-3.1 6.3-8.2 10.9L12 20.3z"/></svg>`;
+  }
+  function isFav(id) { return !!(store.favs && store.favs[id]); }
+  function favCount() { return Object.keys(store.favs || {}).filter(id => clById[id]).length; }
+  function toggleFav(id) {
+    store.favs = Object.assign({}, store.favs);
+    if (store.favs[id]) delete store.favs[id]; else store.favs[id] = today();
+    const on = isFav(id);
+    if (on && !store.seen.fav) toast("Saved to favorites. It lives in this browser on this device only. Open Your data to back it up.");
+    else toast(on ? "Added to favorites" : "Removed from favorites");
+    store.seen = Object.assign({}, store.seen, { fav: true });
+    save(); paintFavLink();
+  }
+  function favButton(cl, big) {
+    const on = isFav(cl.id);
+    return big
+      ? `<button type="button" class="btn fav-big" aria-pressed="${on}">${heartIcon(on)}<span>${on ? "Saved to favorites" : "Save to favorites"}</span></button>`
+      : `<button type="button" class="fav-btn" data-fav="${cl.id}" aria-pressed="${on}" aria-label="${on ? "Remove from" : "Add to"} favorites: ${esc(cl.title)}" title="${on ? "Remove from" : "Add to"} favorites">${heartIcon(on)}</button>`;
+  }
+  function paintFav(btn, on, big) {
+    btn.setAttribute("aria-pressed", String(on));
+    const svg = btn.querySelector("svg"); if (svg) svg.classList.toggle("on", on);
+    if (big) btn.querySelector("span").textContent = on ? "Saved to favorites" : "Save to favorites";
+    else { const t = (clById[btn.dataset.fav] || {}).title || ""; btn.setAttribute("aria-label", `${on ? "Remove from" : "Add to"} favorites: ${t}`); btn.title = `${on ? "Remove from" : "Add to"} favorites`; }
+    if (on) { btn.classList.remove("fav-pop"); void btn.offsetWidth; btn.classList.add("fav-pop"); }
+  }
+  function paintFavLink() {
+    const a = document.querySelector(".fav-link"); if (!a) return;
+    const n = favCount();
+    a.querySelector(".fav-count").textContent = n ? String(n) : "";
+    a.setAttribute("aria-label", `Favorites, ${n} saved`);
+    a.querySelector("svg").classList.toggle("on", n > 0);
+  }
+
   /* ---------------- Router ---------------- */
   function route(keepScroll) {
     const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
     const [view, arg] = [h.split("/")[0], h.split("/").slice(1).join("/")];
     let nav = "list";
+    filters.fav = view === "favorites";
     if (view === "c" && clById[arg]) { renderChecklist(clById[arg]); nav = ""; }
     else if (view === "categories") { renderCategories(); nav = "categories"; }
     else if (view === "category" && catById[arg]) { filters.cat = arg; filters.tag = ""; filters.fromRoute = true; renderList(); nav = "categories"; }
@@ -206,6 +256,8 @@
     else if (view === "tag") { filters.tag = arg; filters.cat = ""; filters.fromRoute = true; renderList(); nav = "tags"; }
     else if (view === "about") { renderAbout(); nav = "about"; }
     else if (view === "history") { renderHistory(arg); nav = "history"; }
+    else if (view === "favorites") { renderList(); nav = "favorites"; }
+    else if (view === "data") { renderData(); nav = "data"; }
     else {
       // A category/tag picked by URL is cleared when going back to the plain list.
       if (filters.fromRoute) { filters.cat = ""; filters.tag = ""; filters.fromRoute = false; }
@@ -214,19 +266,23 @@
     document.querySelectorAll("[data-nav]").forEach(a => {
       if (a.dataset.nav === nav) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
+    const fl = document.querySelector(".fav-link");
+    if (fl) { if (nav === "favorites") fl.setAttribute("aria-current", "page"); else fl.removeAttribute("aria-current"); }
     if (keepScroll !== true && !(view === "history" && arg)) window.scrollTo(0, 0);
   }
   window.addEventListener("hashchange", () => route());
 
   /* ---------------- List view ---------------- */
-  const filters = { q: "", cat: "", aud: "", tag: "", sort: "cat", fromRoute: false };
+  const filters = { q: "", cat: "", aud: "", fmt: "", tag: "", fav: false, sort: "cat", fromRoute: false };
 
   function renderList() {
     document.title = SITE;
     main.innerHTML = `
       <section class="intro">
-        <h1>${sparkle(0)}Adam and Billy's checklists${em(4, "🎶", true)}</h1>
-        <p>Checklists for music teachers, with the reasons and the research behind them.</p>
+        ${filters.fav ? `<h1>${heartIcon(true)}Your favorites</h1>
+        <p>Checklists you've hearted. They're saved in this browser on this device only, with no account. <a href="#/data">Back them up</a>.</p>`
+        : `<h1>${sparkle(0)}Adam and Billy's checklists${em(4, "🎶", true)}</h1>
+        <p>Checklists for music teachers, with the reasons and the research behind them.</p>`}
       </section>
       <div class="filters" role="search">
         <div class="filter-row">
@@ -245,8 +301,12 @@
             <option value="human" ${filters.sort === "human" ? "selected" : ""}>Sort: most human-checked</option>
           </select>
         </div>
-        <div class="filter-row chips" role="group" aria-label="Who is this for?">
-          <span class="chip-label">I'm a…</span>
+        <div class="filter-row chips" role="group" aria-label="What are you teaching?">
+          <span class="chip-label">What you're teaching:</span>
+          ${FMTS.map(f => `<button type="button" class="chip" data-fmt="${f.id}" aria-pressed="${filters.fmt === f.id}">${em(3, f.emoji)}${esc(f.name)}</button>`).join("")}
+        </div>
+        <div class="filter-row chips" role="group" aria-label="Who it's for">
+          <span class="chip-label">Who it's for:</span>
           ${AUDS.map(a => `<button type="button" class="chip" data-aud="${a.id}" aria-pressed="${filters.aud === a.id}">${em(3, a.emoji)}${esc(a.name)}</button>`).join("")}
         </div>
         <div id="activeTag"></div>
@@ -263,12 +323,24 @@
       main.querySelectorAll("[data-aud]").forEach(x => x.setAttribute("aria-pressed", String(filters.aud === x.dataset.aud)));
       drawList();
     }));
+    main.querySelectorAll("[data-fmt]").forEach(b => b.addEventListener("click", () => {
+      filters.fmt = filters.fmt === b.dataset.fmt ? "" : b.dataset.fmt;
+      main.querySelectorAll("[data-fmt]").forEach(x => x.setAttribute("aria-pressed", String(filters.fmt === x.dataset.fmt)));
+      drawList();
+    }));
+    main.querySelector("#list").addEventListener("click", e => {
+      const b = e.target.closest("[data-fav]"); if (!b) return;
+      toggleFav(b.dataset.fav);
+      if (filters.fav) drawList(); else paintFav(b, isFav(b.dataset.fav));
+    });
     drawList();
   }
 
   function matches(cl) {
     if (filters.cat && cl.cat !== filters.cat) return false;
     if (filters.aud && !(cl.aud || []).includes(filters.aud)) return false;
+    if (filters.fmt && !(cl.fmt || []).includes(filters.fmt)) return false;
+    if (filters.fav && !isFav(cl.id)) return false;
     if (filters.tag && !(cl.tags || []).includes(filters.tag)) return false;
     const q = filters.q.trim().toLowerCase();
     if (!q) return true;
@@ -293,11 +365,14 @@
       human: (a, b) => slopOf(a) - slopOf(b) || a.title.localeCompare(b.title)
     }[filters.sort];
     rows = rows.slice().sort(by);
-    main.querySelector("#count").textContent = `${rows.length} of ${CHECKLISTS.length} checklists`;
-    if (!rows.length) { list.innerHTML = `<li class="empty">Nothing matches. Try fewer filters.</li>`; return; }
+    main.querySelector("#count").textContent = filters.fav ? `${rows.length} favorite${rows.length === 1 ? "" : "s"}` : `${rows.length} of ${CHECKLISTS.length} checklists`;
+    if (!rows.length) {
+      list.innerHTML = filters.fav && !favCount() ? `<li class="empty">No favorites yet. Tap the heart on any checklist to save it here.</li>` : `<li class="empty">Nothing matches. Try fewer filters.</li>`;
+      return;
+    }
     list.innerHTML = rows.map((cl, i) => {
       const d = doneCount(cl), n = cl.items.length;
-      return `<li><a class="cl-row" href="#/c/${cl.id}">
+      return `<li class="cl-item"><a class="cl-row" href="#/c/${cl.id}">
         <div class="cl-main">
           <div class="cl-title">${em(2, cl.emoji)}${tx(cl.title)}${sparkle(i, true)}</div>
           <div class="cl-summary">${tx(cl.summary)}</div>
@@ -309,7 +384,7 @@
             ${slopTag(cl)}
           </div>
         </div>
-      </a></li>`;
+      </a>${favButton(cl)}</li>`;
     }).join("");
   }
 
@@ -327,6 +402,11 @@
   function renderTags() {
     document.title = `Tags · ${SITE}`;
     main.innerHTML = `<h1>${em(3, EMO.ui.tags)}Tags</h1>
+      <h2>What you're teaching</h2>
+      <div class="tag-cloud">${FMTS.map(f => {
+        const n = CHECKLISTS.filter(c => (c.fmt || []).includes(f.id)).length;
+        return `<a class="chip" href="#/" data-gofmt="${f.id}">${em(3, f.emoji)}${esc(f.name)} · ${n}</a>`;
+      }).join("")}</div>
       <h2>Who it's for</h2>
       <div class="tag-cloud">${AUDS.map(a => {
         const n = CHECKLISTS.filter(c => (c.aud || []).includes(a.id)).length;
@@ -335,6 +415,7 @@
       <h2>Topics</h2>
       <div class="tag-cloud">${allTags().map(([t, n]) => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">${em(4, itemEmoji(t, n) || "🏷️")}${esc(t)} · ${n}</a>`).join("")}</div>`;
     main.querySelectorAll("[data-goaud]").forEach(a => a.addEventListener("click", () => { filters.aud = a.dataset.goaud; filters.cat = ""; filters.tag = ""; }));
+    main.querySelectorAll("[data-gofmt]").forEach(a => a.addEventListener("click", () => { filters.fmt = a.dataset.gofmt; filters.cat = ""; filters.tag = ""; }));
   }
 
   /* ---------------- Checklist view ---------------- */
@@ -352,8 +433,10 @@
       <p class="lede">${tx(cl.summary)}${em(4, "✨", true)}</p>
       <div class="meta-line">
         <span class="ev-badge ev ev-${cl.evidence}" title="${esc(ev.help || "")}">${evHtml(cl.evidence)}</span>
+        ${favButton(cl, true)}
         <span class="small muted">For: ${(cl.aud || []).length >= AUDS.length ? `${em(4, "🌈")}everyone` : (cl.aud || []).map(a => em(3, (audById[a] || {}).emoji) + esc((audById[a] || {}).name || a)).join(" · ")}</span>
       </div>
+      ${(cl.fmt || []).length ? `<div class="meta-line"><span class="small muted">Setting: ${cl.fmt.map(f => em(3, (fmtById[f] || {}).emoji) + esc((fmtById[f] || {}).name || f)).join(" · ")}</span></div>` : ""}
       <div class="meta-line">${(cl.tags || []).map(t => `<a class="chip" href="#/tag/${encodeURIComponent(t)}">${lvl() >= 4 ? em(4, itemEmoji(t, 0) || "🏷️") : "#"}${esc(t)}</a>`).join("")}</div>
       <p class="slop-line"><button type="button" class="linklike slop-jump" id="slopJump"></button></p>
 
@@ -410,7 +493,7 @@
         <summary><span>${em(3, EMO.ui.review)}Review & AI slop meter</span> <span class="sum-note" id="rev-note"></span></summary>
         <div class="sec-body">
           <div id="meterSlot"></div>
-          <p class="small muted">Tick what a real person has done. Source checks above count too. Reviews are saved in this browser. Use "Copy review for repo" to make them permanent for everyone. <a href="#/about">How the meter works</a></p>
+          <p class="small muted">Tick what a real person has done. Source checks above count too. Your review lowers the meter right away, but only in this browser on this device. To make it count for everyone, use "Copy review for repo," or <a href="#/data">export your data</a> and send the file to Adam or Billy. <a href="#/about">How the meter works</a></p>
           <ul class="review-steps">${STEPS.map(st => `<li><label>
             <input type="checkbox" data-step="${st.key}" ${r[st.key] ? "checked" : ""}>
             <span>${esc(st.label)} <span class="pts">−${st.pts} slop</span></span></label></li>`).join("")}
@@ -514,6 +597,7 @@
       const r2 = store.reviews[cl.id] = store.reviews[cl.id] || {}; r2.notes = e.target.value; save();
     });
     main.querySelector("#copyRepo").addEventListener("click", () => copyText(repoSnippet(cl)));
+    main.querySelector(".fav-big").addEventListener("click", e => { toggleFav(cl.id); paintFav(e.currentTarget, isFav(cl.id), true); });
   }
 
   function repoSnippet(cl) {
@@ -558,7 +642,7 @@
       <p class="small muted">Source points are split evenly across a checklist's sources. A human check on a source replaces the AI credit for that source.</p>
       <ul>
         <li><strong>100%</strong>: raw AI draft, nothing checked.</li>
-        <li><strong>93%</strong>: links verified by AI, claims not yet checked. These are the 21 checklists added by the cloud session on Oct 23.</li>
+        <li><strong>93%</strong>: the AI verified links, or matched claims, but not both. These are the 21 checklists added by the cloud session on Oct 23 (links verified) and the 7 added on Oct 25 (claims matched to abstracts found by search; links not yet live-checked).</li>
         <li><strong>85%</strong>: links verified and claims matched to abstracts by the drafting AI. These are the first 47 checklists.</li>
         <li><strong>~78%</strong>: the most AI alone can reach, after an independent second AI double-check of claims.</li>
         <li><strong>Below that</strong>: only people can take it further. 0% means a human read it, fixed it, had an expert review it, and checked every source.</li>
@@ -577,40 +661,86 @@
 
       <h2>${em(3, "🎉")}Emoji and celebrations</h2>
       <p>Use <strong>Display</strong> at the top of any page to pick how many emoji you want, from <em>None whatsoever</em> to <em>There's no such thing as too many</em> (the default is <em>Tactful</em>). Emoji are decorative, so screen readers skip them.</p>
-      <p>Celebrations fire when you check your first box, reach the halfway point, finish a checklist, or lower a checklist's slop. Pick <em>Confetti</em>, <em>Quiet</em> (a message, nothing moves), or <em>Off</em>. If your device asks for reduced motion, you'll get the quiet version.</p>
-      <div class="btns"><button type="button" class="btn" id="tryCelebrate">${em(2, "🎊")}Try a celebration</button></div>
+      <p>Celebrations fire when you check your first box, reach the halfway point, finish a checklist, or lower a checklist's slop. Pick one of ${STYLES.length} styles (${STYLES.map(x => x.name.toLowerCase()).join(", ")}), <em>Surprise me</em> for a different one each time, <em>Quiet</em> (a message, nothing moves), or <em>Off</em>. Every style re-rolls its colors, shapes, and timing, so no two look the same. Previews play at half strength, with a short cooldown between tries. If your device asks for reduced motion, you'll get the quiet version.</p>
+      <div class="btns"><button type="button" class="btn" data-preview data-label="Try a celebration">${em(2, "🎊")}<span class="pv-label">Try a celebration</span></button></div>
 
-      <h2>Where reviews are saved</h2>
-      <p>Checkmarks and reviews live in <strong>this browser only</strong> (localStorage). They don't sync to other devices or other people. To make a review permanent for everyone, use <em>Copy review for repo</em> on a checklist and paste it into the data file, or export everything below and send it to whoever maintains the site.</p>
-      <div class="btns">
-        <button type="button" class="btn btn-primary" id="exportBtn">${em(3, EMO.ui.export)}Export my reviews & checks</button>
-        <label class="btn" for="importFile">Import…</label>
-        <input type="file" id="importFile" accept="application/json,.json" class="visually-hidden">
-        <button type="button" class="btn" id="clearAll">Clear everything in this browser</button>
-      </div>
+      <h2>Where your checkmarks, favorites, and reviews are saved</h2>
+      <p>In <strong>this browser on this device only</strong>. There's no account. See <a href="#/data">Your data</a> to export a backup, move it to another device, or send your reviews to Adam and Billy.</p>
 
       <h2>Not advice</h2>
       <p>Nothing here is legal, medical, or mental-health advice. Laws and policies (mandated reporting, FERPA, Title IX, copyright) vary by place and change over time. If a student is in danger, contact emergency services or, in the U.S., call or text 988.</p>
     </div>`;
 
+    wirePreviews(main);
+  }
+
+  /* ---------------- Your data: what's saved, export, import ---------------- */
+  function dataSummary() {
+    const checked = Object.entries(store.checks).filter(([id, c]) => clById[id] && Object.keys(c).length);
+    const reviewed = Object.keys(store.reviews).filter(id => clById[id] && hasHuman(clById[id]));
+    return {
+      checklists: checked.length, checks: checked.reduce((a, [, c]) => a + Object.keys(c).length, 0),
+      done: checked.filter(([id]) => doneCount(clById[id]) === clById[id].items.length).length,
+      favs: favCount(), reviewed: reviewed.length, links: Object.values(store.links).filter(Boolean).length
+    };
+  }
+  function renderData() {
+    document.title = `Your data · ${SITE}`;
+    const d = dataSummary(), plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+    const last = store.seen.exported;
+    main.innerHTML = `<div class="prose">
+      <h1>${em(3, EMO.ui.export)}Your data</h1>
+      <div class="callout">
+        <p><strong>No account. Nothing is sent anywhere.</strong> Everything you do here is saved only in <strong>this browser on this device</strong>. A different browser, a different device, or a private window won't see it. Clearing your browser's site data erases it.</p>
+      </div>
+      <h2>What's saved here</h2>
+      <ul class="data-list">
+        <li><strong>${plural(d.favs, "favorite")}</strong>${d.favs ? ` · <a href="#/favorites">see them</a>` : ""}</li>
+        <li><strong>${plural(d.checks, "checkmark")}</strong> across ${plural(d.checklists, "checklist")}${d.done ? ` (${d.done} finished)` : ""}</li>
+        <li><strong>${plural(d.reviewed, "checklist")}</strong> with your human review, which lowers their slop meter in this browser</li>
+        <li><strong>${plural(d.links, "source")}</strong> you marked as opened and correct</li>
+        <li>Your display settings: emoji level and celebration style</li>
+      </ul>
+
+      <h2>Back up or move to another device</h2>
+      <p>Export downloads one small file with everything above. Import it on another browser or device to merge it in. Nothing you already have is deleted.</p>
+      <div class="btns">
+        <button type="button" class="btn btn-primary" id="exportBtn">${em(3, EMO.ui.export)}Export a backup</button>
+        <label class="btn" for="importFile">Import a backup…</label>
+        <input type="file" id="importFile" accept="application/json,.json" class="visually-hidden">
+      </div>
+      <p class="small muted">${last ? `Last exported in this browser: ${esc(last)}.` : "You haven't exported from this browser yet."}</p>
+
+      <h2>Make your reviews count for everyone</h2>
+      <p>Each checklist's AI slop meter drops when a person reviews it: reading it, fixing it, having an expert look, and checking each source. You do that in the checklist's <em>Review &amp; AI slop meter</em> section. Your review lowers the meter immediately, but only for you, in this browser.</p>
+      <p>To lower it for everyone, either use <em>Copy review for repo</em> on that checklist and add it to the site's data, or export a backup here and send the file to Adam or Billy. Reviews in the site's data show up for every visitor.</p>
+
+      <h2>Start over</h2>
+      <p>Clear removes checkmarks, favorites, and reviews from this browser. Your display settings stay.</p>
+      <div class="btns"><button type="button" class="btn" id="clearAll">Clear everything in this browser</button></div>
+    </div>`;
+
     main.querySelector("#exportBtn").addEventListener("click", () => {
-      download(`music-checklists-${today()}.json`, JSON.stringify({ app: "mtc", version: 1, ...store }, null, 2));
+      store.seen = Object.assign({}, store.seen, { exported: today() }); save();
+      const { checks, reviews, links, favs, prefs } = store;
+      download(`checklists-backup-${today()}.json`, JSON.stringify({ app: "mtc", version: 2, exported: new Date().toISOString(), checks, reviews, links, favs, prefs }, null, 2));
+      renderData();
     });
     main.querySelector("#importFile").addEventListener("change", e => {
       const f = e.target.files[0]; if (!f) return;
       f.text().then(t => {
         const d = JSON.parse(t);
-        ["checks", "reviews", "links"].forEach(k => { if (d[k] && typeof d[k] === "object") store[k] = Object.assign(store[k] || {}, d[k]); });
-        save(); toast("Imported"); renderAbout();
-      }).catch(() => toast("That file didn't look like an export."));
+        if (!d || typeof d !== "object" || !(d.checks || d.reviews || d.links || d.favs)) throw new Error("not an export");
+        ["checks", "reviews", "links", "favs", "prefs"].forEach(k => { if (d[k] && typeof d[k] === "object") store[k] = Object.assign({}, store[k], d[k]); });
+        save(); renderChrome(); toast("Imported and merged"); renderData();
+      }).catch(() => toast("That file didn't look like a backup from this site."));
     });
     main.querySelector("#clearAll").addEventListener("click", () => {
-      if (confirm("Clear all checkmarks and reviews saved in this browser? This can't be undone.")) {
+      if (confirm("Clear all checkmarks, favorites, and reviews saved in this browser? This can't be undone unless you exported a backup.")) {
         const prefs = store.prefs;   // keep display settings
-        store = empty(); store.prefs = prefs; save(); toast("Cleared"); renderAbout();
+        store = empty(); store.prefs = prefs; save(); paintFavLink(); toast("Cleared"); renderData();
       }
     });
-    main.querySelector("#tryCelebrate").addEventListener("click", e => celebrate("test", {}, e.currentTarget));
   }
 
   /* ---------------- Site history ---------------- */
@@ -647,91 +777,314 @@
   }
 
   /* ---------------- Celebrations ----------------
-     To add one: give it a key here, then call celebrate("key", data, originElement).
-     size: 0 = a single pop, 1 = small burst, 2 = medium, 3 = big.  */
+     Events (below) say WHAT happened. Styles (STYLES) say HOW it looks. Each style
+     re-rolls its palette, shapes, angles, and timing every time, so no two are alike.
+     To add an event: give it a key here, then call celebrate("key", data, originElement).
+     size: 0 = a single pop, 1 = small, 2 = medium, 3 = big.  */
   const CELEBRATIONS = {
-    first:    { size: 1, emo: ["✅", "🎵"], msg: () => "First box checked. That's how it starts." },
+    first:    { size: 1, emo: ["✅", "🎵", "👏", "🙌"],
+                msg: () => pickOne(["First box checked. That's how it starts.", "One down. And we're off.", "First check. The downbeat.", "Off to a good start."]) },
     tick:     { size: 0, silent: true },
-    half:     { size: 1, emo: ["🎶", "⛳"], msg: d => `Halfway through "${d.title}".` },
-    complete: { size: 3, emo: ["🎉", "🎺", "🥁", "🎊"], msg: d => `Checklist complete: ${d.title}` },
-    slop:     { size: 1, emo: ["🧹", "📉"], msg: d => `Slop down to ${d.slop}%. ${d.label}.` },
-    verified: { size: 3, emo: ["🏅", "🧑‍🏫", "🎉", "✨"], msg: d => `Human-verified! "${d.title}" is at 0% slop.` },
-    test:     { size: 2, emo: ["🎉", "🎶", "✨", "🎊"], msg: () => "This is what a celebration looks like." }
+    half:     { size: 1, emo: ["🎶", "⛳", "💪", "🚀"],
+                msg: d => pickOne([`Halfway through "${d.title}".`, `Half done. Keep going.`, `Halfway there. No intermission yet.`, `You're at the halfway double bar.`]) },
+    complete: { size: 3, emo: ["🎉", "🎺", "🥁", "🎊", "🏆", "🙌"],
+                msg: d => pickOne([`Checklist complete: ${d.title}`, `Done! Every box in "${d.title}".`, `That's a wrap: ${d.title}`, `Fine. (As in, the end.) "${d.title}" is done.`, `All checked. Take a bow.`]) },
+    slop:     { size: 1, emo: ["🧹", "📉", "🧽"],
+                msg: d => pickOne([`Slop down to ${d.slop}%. ${d.label}.`, `Less slop: ${d.slop}% now. ${d.label}.`]) },
+    verified: { size: 3, emo: ["🏅", "🧑‍🏫", "🎉", "✨"],
+                msg: d => pickOne([`Human-verified! "${d.title}" is at 0% slop.`, `0% slop. A real person stands behind "${d.title}".`]) },
+    test:     { size: 2, emo: ["🎉", "🎶", "✨", "🎊"],
+                msg: d => d.random ? `Surprise me picked ${d.name} this time. Previews play at half strength.` : `${d.name}, at half strength. The real thing is bigger.` }
   };
   function reduceMotion() { return !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
-  function celebrate(kind, data, origin) {
-    const c = CELEBRATIONS[kind], mode = pref("celebrate");
+  function pickOne(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function shuffled(arr) { return arr.slice().sort(() => Math.random() - .5); }
+  let lastStyle = "";
+  function resolveStyle(mode) {
+    if (mode !== "random") return mode;
+    const pool = STYLES.map(s => s.id).filter(id => id !== lastStyle);   // never the same twice in a row
+    return pickOne(pool);
+  }
+  // opts: { style: force a style, preview: true for half strength }
+  function celebrate(kind, data, origin, opts) {
+    const c = CELEBRATIONS[kind], o = opts || {}, mode = o.style || pref("celebrate");
     if (!c || mode === "off") return;
+    const style = mode === "quiet" ? "" : resolveStyle(mode);
+    if (style) lastStyle = style;
+    const d = Object.assign({}, data, { name: (STYLES.find(s => s.id === style) || {}).name || "Quiet", random: mode === "random" });
     if (!c.silent) {
-      const n = [0, 1, 1, 2, c.emo.length][lvl()];
-      toast((n ? c.emo.slice(0, n).join("") + " " : "") + c.msg(data || {}), "celebrate");
+      const n = [0, 1, 1, 2, 4][lvl()];
+      toast((n ? shuffled(c.emo).slice(0, n).join("") + " " : "") + c.msg(d), "celebrate");
     }
-    if (mode !== "confetti" || reduceMotion()) return;
-    if (c.size === 0) { if (lvl() >= 4) burst(1, origin); else if (lvl() >= 3) pop(origin); return; }
-    burst(c.size, origin);
+    if (!style || reduceMotion()) return;
+    if (c.size === 0) { if (lvl() >= 4) runEffect(style, 1, origin, .6); else if (lvl() >= 3) pop(origin); return; }
+    runEffect(style, c.size, origin, o.preview ? .5 : 1);
   }
   function pop(origin) {
     if (!origin) return;
     const r = origin.getBoundingClientRect(), el = document.createElement("span");
     el.className = "emo-pop"; el.setAttribute("aria-hidden", "true");
-    el.textContent = EMO.confetti[Math.floor(Math.random() * EMO.confetti.length)] || "✨";
-    el.style.left = `${r.left + r.width / 2}px`; el.style.top = `${r.top}px`;
+    el.textContent = pickOne(EMO.confetti.length ? EMO.confetti : ["✨"]);
+    el.style.left = `${r.left + r.width / 2 + rnd(-8, 8)}px`; el.style.top = `${r.top}px`;
+    el.style.setProperty("--drift", `${rnd(-30, 30)}px`);
     document.body.appendChild(el); setTimeout(() => el.remove(), 900);
   }
 
-  // A tiny confetti engine: one canvas, removed when the last particle lands.
-  let confetti = null;
-  function burst(size, origin) {
-    const counts = [0, 26, 70, 150], n = counts[size] || 26;
-    if (!confetti) {
-      const cv = document.createElement("canvas");
-      cv.className = "confetti"; cv.setAttribute("aria-hidden", "true");
-      document.body.appendChild(cv);
-      confetti = { cv, ctx: cv.getContext("2d"), parts: [], last: 0 };
-      const fit = () => {
-        const dpr = window.devicePixelRatio || 1;
-        cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
-        confetti.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      };
-      fit(); confetti.fit = fit; addEventListener("resize", fit);
-      requestAnimationFrame(tickConfetti);
-    }
-    const r = origin && origin.getBoundingClientRect ? origin.getBoundingClientRect() : null;
-    const ox = r ? r.left + r.width / 2 : innerWidth / 2, oy = r ? r.top + r.height / 2 : innerHeight / 3;
-    const css = getComputedStyle(document.documentElement);
-    const colors = ["--accent", "--focus", "--slop-1", "--slop-2", "--slop-3", "--slop-4"].map(v => css.getPropertyValue(v).trim()).filter(Boolean);
-    const glyphShare = [0, 0, 0, .45, 1][lvl()];
-    for (let i = 0; i < n; i++) {
-      const big = size >= 3, a = big ? Math.random() * Math.PI * 2 : -Math.PI / 2 + (Math.random() - .5) * 2.2;
-      const v = (big ? 5 : 3.5) + Math.random() * (big ? 9 : 6);
-      confetti.parts.push({
-        x: big && i % 2 ? (i % 4 === 1 ? 0 : innerWidth) : ox, y: big && i % 2 ? innerHeight * .65 : oy,
-        vx: big && i % 2 ? (i % 4 === 1 ? 1 : -1) * (4 + Math.random() * 8) : Math.cos(a) * v,
-        vy: big && i % 2 ? -(9 + Math.random() * 8) : Math.sin(a) * v,
-        rot: Math.random() * 6, vr: (Math.random() - .5) * .35, life: 0, ttl: 90 + Math.random() * 70,
-        w: 6 + Math.random() * 6, h: 4 + Math.random() * 6, color: colors[i % colors.length] || "#c26a2e",
-        glyph: Math.random() < glyphShare ? EMO.confetti[i % EMO.confetti.length] : ""
-      });
-    }
+  // Previews: half strength, and a short cooldown so tries don't pile up on each other.
+  const COOLDOWN = 3500;
+  let coolUntil = 0, coolTimer = 0;
+  function previewCelebration(style, origin) {
+    if (Date.now() < coolUntil) return false;
+    celebrate("test", {}, origin, { style, preview: true });
+    coolUntil = Date.now() + COOLDOWN;
+    paintCooldown();
+    return true;
   }
-  function tickConfetti() {
-    const c = confetti; if (!c) return;
-    c.ctx.clearRect(0, 0, innerWidth, innerHeight);
-    c.parts = c.parts.filter(p => p.life < p.ttl && p.y < innerHeight + 40);
-    for (const p of c.parts) {
-      p.life++; p.vy += .28; p.vx *= .985; p.vy *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
-      c.ctx.save(); c.ctx.globalAlpha = Math.min(1, (p.ttl - p.life) / 30);
-      c.ctx.translate(p.x, p.y); c.ctx.rotate(p.rot);
-      if (p.glyph) { c.ctx.font = "22px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"; c.ctx.textAlign = "center"; c.ctx.fillText(p.glyph, 0, 0); }
-      else { c.ctx.fillStyle = p.color; c.ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
-      c.ctx.restore();
+  function paintCooldown() {
+    clearTimeout(coolTimer);
+    const left = coolUntil - Date.now();
+    document.querySelectorAll("[data-preview]").forEach(b => {
+      const label = b.querySelector(".pv-label");
+      b.disabled = left > 0;
+      b.classList.toggle("cooling", left > 0);
+      if (left > 0) b.style.setProperty("--cool-left", `${left}ms`);
+      if (label) label.textContent = left > 0 ? `Ready in ${Math.ceil(left / 1000)}…` : b.dataset.label;
+    });
+    if (left > 0) coolTimer = setTimeout(paintCooldown, Math.min(250, left));
+  }
+
+  /* A small particle engine: one canvas, removed when the last particle is gone. */
+  const W_ = () => innerWidth, H_ = () => innerHeight;
+  const MAX_PARTS = 1000;
+  let fx = null;
+  function ensureFx() {
+    if (fx) return fx;
+    const cv = document.createElement("canvas");
+    cv.className = "confetti"; cv.setAttribute("aria-hidden", "true");
+    document.body.appendChild(cv);
+    fx = { cv, ctx: cv.getContext("2d"), parts: [] };
+    fx.fit = () => {
+      const dpr = window.devicePixelRatio || 1;
+      cv.width = W_() * dpr; cv.height = H_() * dpr;
+      fx.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    fx.fit(); addEventListener("resize", fx.fit);
+    requestAnimationFrame(tickFx);
+    return fx;
+  }
+  function add(p) {
+    if (fx.parts.length >= MAX_PARTS) return;
+    fx.parts.push(Object.assign({ x: 0, y: 0, vx: 0, vy: 0, g: .25, drag: .985, rot: rnd(0, 6.3), vr: rnd(-.2, .2),
+      life: 0, ttl: 120, delay: 0, size: 10, color: "#c26a2e", sway: 0, swayF: .05, phase: rnd(0, 6.3) }, p));
+  }
+  function palette() {
+    const css = getComputedStyle(document.documentElement);
+    const theme = ["--accent", "--focus", "--slop-1", "--slop-2", "--slop-3", "--slop-4"].map(v => css.getPropertyValue(v).trim()).filter(Boolean);
+    return pickOne([
+      theme,
+      ["#e63946", "#f4a261", "#e9c46a", "#2a9d8f", "#457b9d", "#9b5de5"],   // bright
+      ["#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff", "#bdb2ff"],   // pastel
+      ["#d4af37", "#f5d76e", "#fff1b8", "#c9a227", "#fffaf0"],              // gold
+      ["#ff006e", "#fb5607", "#ffbe0b", "#3a86ff", "#8338ec"],              // neon
+      ["#0b3d91", "#e8eef9", "#b22234", "#f2c14e"]                          // marching band
+    ].filter(p => p.length));
+  }
+  // How often a particle becomes an emoji instead of a shape, by emoji level.
+  function glyphChance() { return [0, 0, 0, .4, .85][lvl()]; }
+  function emojiOr(shape, list) { return Math.random() < glyphChance() ? { kind: "glyph", glyph: pickOne(list || EMO.confetti), size: rnd(18, 28) } : shape; }
+  function originXY(origin) {
+    const r = origin && origin.getBoundingClientRect ? origin.getBoundingClientRect() : null;
+    return r && r.width + r.height > 0 ? [r.left + r.width / 2, r.top + r.height / 2] : [W_() / 2, H_() / 3];
+  }
+  function count(base, size, k) { return Math.max(1, Math.round(base[size] * k * rnd(.8, 1.25))); }
+
+  const EFFECTS = {
+    confetti(size, [ox, oy], k) {
+      const pal = palette(), shapes = pickOne([["rect"], ["rect", "circle"], ["rect", "ribbon"], ["rect", "circle", "ribbon"]]);
+      const tilt = rnd(-.6, .6), spread = rnd(1.5, 2.8), cannons = size >= 3 && Math.random() < .75;
+      const fromLeftY = rnd(.5, .85), fromRightY = rnd(.5, .85);
+      for (let i = 0, n = count([0, 30, 70, 160], size, k); i < n; i++) {
+        const side = cannons && i % 2 ? (i % 4 === 1 ? -1 : 1) : 0;
+        const a = -Math.PI / 2 + tilt + (Math.random() - .5) * spread, v = rnd(4, size >= 2 ? 13 : 9) * (k < 1 ? .85 : 1);
+        add(Object.assign({
+          kind: pickOne(shapes), color: pickOne(pal), size: rnd(6, 12), ttl: rnd(90, 170), delay: side ? rnd(0, 12) : 0,
+          x: side ? (side < 0 ? 0 : W_()) : ox, y: side ? H_() * (side < 0 ? fromLeftY : fromRightY) : oy,
+          vx: side ? -side * rnd(4, 12) : Math.cos(a) * v, vy: side ? -rnd(8, 17) : Math.sin(a) * v
+        }, emojiOr({})));
+      }
+    },
+    fireworks(size, [ox], k) {
+      const rockets = Math.max(1, Math.round([0, 1, 3, 6][size] * (k < 1 ? .6 : 1) + rnd(0, size >= 3 ? 3 : 1.4)));
+      for (let i = 0; i < rockets; i++) {
+        const x = size >= 2 ? rnd(.12, .88) * W_() : ox + rnd(-80, 80), ty = rnd(.12, .42) * H_(), y0 = H_() + 10, g = .3;
+        add({ kind: "rocket", x, y: y0, vx: rnd(-1, 1), vy: -Math.sqrt(2 * g * (y0 - ty)), g, drag: 1, ttl: 400,
+          delay: i === 0 ? 0 : rnd(6, 26) * i, color: "", pal: palette(), k, pattern: pickOne(["sphere", "ring", "double", "willow", "crossette"]) });
+      }
+    },
+    balloons(size, [ox], k) {
+      const pal = palette();
+      for (let i = 0, n = count([0, 5, 12, 24], size, k); i < n; i++) {
+        add(Object.assign({ kind: "balloon", color: pickOne(pal), size: rnd(16, 30) * (k < 1 ? .85 : 1),
+          x: size >= 2 ? rnd(.05, .95) * W_() : ox + rnd(-140, 140), y: H_() + rnd(30, 260),
+          vx: rnd(-.3, .3), vy: -rnd(1.3, 2.8), g: 0, drag: 1, sway: rnd(.3, 1.3), swayF: rnd(.02, .05), ttl: 900, rot: 0, vr: 0 },
+        Math.random() < glyphChance() * .5 ? { kind: "glyph", glyph: "🎈", size: rnd(26, 40) } : {}));
+      }
+    },
+    notes(size, [ox, oy], k) {
+      const pal = palette(), text = ["♪", "♫", "♬", "♩"], fromBottom = size >= 3 || (size >= 2 && Math.random() < .5);
+      for (let i = 0, n = count([0, 10, 26, 54], size, k); i < n; i++) {
+        const emoji = Math.random() < glyphChance();
+        add({ kind: emoji ? "glyph" : "text", glyph: emoji ? pickOne(["🎵", "🎶", "🎼"]) : pickOne(text), color: pickOne(pal),
+          size: rnd(18, 36), x: fromBottom ? rnd(.05, .95) * W_() : ox + rnd(-30, 30), y: fromBottom ? H_() + rnd(10, 120) : oy,
+          vx: rnd(-1.2, 1.2), vy: -rnd(1, 2.8), g: 0, drag: 1, sway: rnd(.4, 2.2), swayF: rnd(.03, .08),
+          rot: rnd(-.3, .3), vr: rnd(-.01, .01), ttl: rnd(110, 200), delay: rnd(0, fromBottom ? 50 : 25) });
+      }
+    },
+    sparkles(size, [ox, oy], k) {
+      const pal = palette(), points = pickOne([4, 5, 6]), rings = Math.max(1, size - (Math.random() < .5 ? 1 : 0)) + (size >= 3 ? 1 : 0);
+      for (let r = 0; r < rings; r++) {
+        const n = Math.max(5, Math.round(rnd(10, 18) * k)), sp = rnd(2.2, 6.5), off = rnd(0, 6.3);
+        for (let i = 0; i < n; i++) {
+          const a = off + i / n * Math.PI * 2;
+          add({ kind: "star", points, color: pickOne(pal), size: rnd(5, 11), x: ox, y: oy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+            g: .02, drag: .95, ttl: rnd(55, 95), delay: r * rnd(6, 12), vr: rnd(-.15, .15) });
+        }
+      }
+      if (size >= 2) for (let i = 0, n = count([0, 0, 18, 45], size, k); i < n; i++) {
+        add(Object.assign({ kind: "star", points, color: pickOne(pal), size: rnd(4, 9), x: rnd(0, W_()), y: rnd(0, H_() * .8),
+          vx: 0, vy: rnd(-.2, .2), g: 0, drag: 1, ttl: rnd(40, 80), delay: rnd(0, 60) }, emojiOr({}, ["✨", "🌟", "💫", "⭐"])));
+      }
+    },
+    shower(size, [ox], k) {
+      const pal = palette(), wind = rnd(-1.4, 1.4), wide = size >= 2;
+      for (let i = 0, n = count([0, 40, 100, 200], size, k); i < n; i++) {
+        add(Object.assign({ kind: pickOne(["rect", "rect", "ribbon", "circle"]), color: pickOne(pal), size: rnd(6, 12),
+          x: wide ? rnd(-.1, 1.1) * W_() : ox + rnd(-170, 170), y: rnd(-H_() * .35, -10),
+          vx: wind + rnd(-.6, .6), vy: rnd(1.2, 3.4), g: .02, drag: .996, ttl: rnd(200, 300), delay: rnd(0, 45) }, emojiOr({})));
+      }
+    },
+    bubbles(size, [ox, oy], k) {
+      const pal = palette(), fromBottom = size >= 2;
+      for (let i = 0, n = count([0, 10, 26, 48], size, k); i < n; i++) {
+        add(Object.assign({ kind: "bubble", color: pickOne(pal), size: rnd(6, 24),
+          x: fromBottom ? rnd(.05, .95) * W_() : ox + rnd(-40, 40), y: fromBottom ? H_() + rnd(10, 150) : oy,
+          vx: rnd(-.4, .4), vy: -rnd(.8, 2.3), g: 0, drag: 1, sway: rnd(.4, 1.6), swayF: rnd(.03, .07),
+          ttl: rnd(fromBottom ? 160 : 70, fromBottom ? 320 : 150), delay: rnd(0, 40) }, Math.random() < glyphChance() * .4 ? { kind: "glyph", glyph: "🫧", size: rnd(20, 34) } : {}));
+      }
     }
-    if (c.parts.length) requestAnimationFrame(tickConfetti);
-    else { removeEventListener("resize", c.fit); c.cv.remove(); confetti = null; }
+  };
+  function runEffect(style, size, origin, k) {
+    const f = EFFECTS[style] || EFFECTS.confetti;
+    ensureFx(); f(size, originXY(origin), k);
+  }
+  function explode(p) {
+    const n = Math.round(rnd(60, 110) * (p.k < 1 ? .6 : 1)), c1 = pickOne(p.pal), c2 = pickOne(p.pal);
+    add({ kind: "flash", color: c1, size: 8, x: p.x, y: p.y, g: 0, drag: 1, ttl: 14, vr: 0 });
+    const glyphs = Math.random() < glyphChance();
+    const burst = (sp, color, ttl, g, drag, offset, gcount) => {
+      for (let i = 0; i < gcount; i++) {
+        const a = offset + i / gcount * Math.PI * 2 + (p.pattern === "sphere" ? rnd(-.2, .2) : 0);
+        const v = p.pattern === "sphere" ? sp * rnd(.3, 1) : sp;
+        add({ kind: glyphs && i % 7 === 0 ? "glyph" : "spark", glyph: pickOne(["✨", "🌟", "💥", "🎆"]), size: glyphs ? 18 : rnd(2.6, 4),
+          color, x: p.x, y: p.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g, drag, ttl, rot: 0, vr: 0 });
+      }
+    };
+    if (p.pattern === "double") { burst(rnd(4.5, 6.5), c1, 70, .05, .965, 0, n / 2 | 0); burst(rnd(1.5, 2.5), c2, 60, .05, .965, .2, n / 2 | 0); }
+    else if (p.pattern === "willow") burst(rnd(2.5, 4), "#f5d76e", 130, .035, .975, 0, n);
+    else if (p.pattern === "crossette") { burst(rnd(3, 4.5), c1, 55, .05, .96, 0, 8); burst(rnd(3, 5), c2, 75, .05, .965, .4, n - 8); }
+    else burst(rnd(4.5, 7), p.pattern === "ring" ? c1 : pickOne([c1, c2]), rnd(60, 85), .05, .965, rnd(0, 6.3), n);
+  }
+  function drawStar(ctx, pts, r) {
+    ctx.beginPath();
+    for (let i = 0; i < pts * 2; i++) {
+      const a = i * Math.PI / pts - Math.PI / 2, rad = i % 2 ? r * .42 : r;
+      ctx[i ? "lineTo" : "moveTo"](Math.cos(a) * rad, Math.sin(a) * rad);
+    }
+    ctx.closePath(); ctx.fill();
+  }
+  function tickFx() {
+    const f = fx; if (!f) return;
+    const ctx = f.ctx, W = W_(), H = H_();
+    ctx.clearRect(0, 0, W, H);
+    // New particles (bursts, pops) are queued and added after the filter, or they'd be lost.
+    const born = [], bursting = [];
+    f.parts = f.parts.filter(p => {
+      if (p.delay > 0) { p.delay--; return true; }
+      if (p.kind === "rocket" && p.vy >= -.6) { bursting.push(p); return false; }
+      if (p.kind === "bubble" && p.life >= p.ttl) {   // pop
+        for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; born.push({ kind: "spark", color: p.color, size: 1.6, x: p.x + Math.cos(a) * p.size, y: p.y + Math.sin(a) * p.size, vx: Math.cos(a) * 1.5, vy: Math.sin(a) * 1.5, g: 0, drag: .9, ttl: 14 }); }
+        return false;
+      }
+      if (p.life >= p.ttl) return false;
+      if (p.vy > 0 && p.y > H + 60) return false;
+      if (p.vy < 0 && p.y < -160 && p.kind !== "rocket") return false;
+      return true;
+    });
+    born.forEach(p => add(p));
+    bursting.forEach(explode);
+    for (const p of f.parts) {
+      if (p.delay > 0) continue;
+      p.px = p.x; p.py = p.y;
+      p.life++; p.vy += p.g; p.vx *= p.drag; p.vy *= p.drag; p.rot += p.vr;
+      p.x += p.vx + (p.sway ? Math.sin(p.life * p.swayF + p.phase) * p.sway : 0); p.y += p.vy;
+      const fade = Math.min(1, (p.ttl - p.life) / 30);
+      ctx.save();
+      ctx.globalAlpha = p.kind === "star" ? fade * (.55 + .45 * Math.sin(p.life * .45 + p.phase)) : p.kind === "bubble" ? .75 : fade;
+      if (p.kind === "spark" || p.kind === "rocket") {
+        const color = p.color || p.pal[0], trail = p.kind === "rocket" ? 3 : 4;
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = p.kind === "rocket" ? 3 : p.size; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(p.px - (p.x - p.px) * trail, p.py - (p.y - p.py) * trail); ctx.lineTo(p.x, p.y); ctx.stroke();
+        ctx.beginPath(); ctx.arc(p.x, p.y, (p.kind === "rocket" ? 3 : p.size) * .9, 0, 6.3); ctx.fill();
+        ctx.restore(); continue;
+      }
+      if (p.kind === "flash") {
+        ctx.globalAlpha = (1 - p.life / p.ttl) * .55; ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size + p.life * 5, 0, 6.3); ctx.fill();
+        ctx.restore(); continue;
+      }
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.color;
+      if (p.kind === "glyph" || p.kind === "text") {
+        ctx.font = `${p.kind === "text" ? "bold " : ""}${p.size}px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif`;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(p.glyph, 0, 0);
+      } else if (p.kind === "rect") {
+        ctx.scale(1, Math.cos(p.life * .18 + p.phase)); ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * .66);
+      } else if (p.kind === "circle") {
+        ctx.beginPath(); ctx.arc(0, 0, p.size / 2.6, 0, 6.3); ctx.fill();
+      } else if (p.kind === "ribbon") {
+        ctx.strokeStyle = p.color; ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.beginPath();
+        ctx.moveTo(-p.size, 0); ctx.quadraticCurveTo(0, Math.sin(p.life * .3 + p.phase) * 7, p.size, 0); ctx.stroke();
+      } else if (p.kind === "star") {
+        drawStar(ctx, p.points || 5, p.size);
+      } else if (p.kind === "balloon") {
+        const r = p.size;
+        ctx.rotate(-p.rot + Math.sin(p.life * p.swayF + p.phase) * .12);
+        ctx.strokeStyle = "rgba(120,120,120,.7)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, r);
+        ctx.quadraticCurveTo(Math.sin(p.life * .08 + p.phase) * 8, r * 1.8, 0, r * 2.6); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(0, 0, r * .82, r, 0, 0, 6.3); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(-3, r + 3); ctx.lineTo(3, r + 3); ctx.lineTo(0, r - 2); ctx.fill();
+        ctx.globalAlpha *= .35; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(-r * .3, -r * .35, r * .18, r * .3, -.5, 0, 6.3); ctx.fill();
+      } else if (p.kind === "bubble") {
+        ctx.strokeStyle = p.color; ctx.lineWidth = 1.6; ctx.fillStyle = "rgba(255,255,255,.08)";
+        ctx.beginPath(); ctx.arc(0, 0, p.size, 0, 6.3); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,.6)"; ctx.beginPath(); ctx.arc(-p.size * .35, -p.size * .35, p.size * .18, 0, 6.3); ctx.fill();
+      }
+      ctx.restore();
+    }
+    if (f.parts.length) requestAnimationFrame(tickFx);
+    else { removeEventListener("resize", f.fit); f.cv.remove(); fx = null; }
   }
 
   /* ---------------- Display panel (header) ---------------- */
   const SAMPLES = { none: "", barely: "🎻", tactful: "🎻 🎉", plenty: "🎻 🎉 💡 👂", max: "🎻🎉✨🎶🌟🎺" };
+  // Any button with data-preview plays the chosen style at half strength, then cools down.
+  function wirePreviews(scope) {
+    scope.querySelectorAll("[data-preview]").forEach(b => b.addEventListener("click", e => {
+      const mode = pref("celebrate"), style = b.dataset.style || (mode === "quiet" || mode === "off" ? "confetti" : mode);
+      previewCelebration(style, e.currentTarget);
+    }));
+    paintCooldown();
+  }
   function renderChrome() {
     document.documentElement.dataset.emoji = pref("emoji");
     document.querySelectorAll("[data-nav]").forEach(a => {
@@ -740,8 +1093,10 @@
     });
     const slot = document.getElementById("prefsSlot"); if (!slot) return;
     const wasOpen = !!slot.querySelector(".prefs-panel:not([hidden])");
-    const cur = pref("emoji"), cm = pref("celebrate");
-    slot.innerHTML = `<div class="prefs">
+    const cur = pref("emoji"), cm = pref("celebrate"), showIcons = lvl() >= 2;
+    const n = favCount();
+    slot.innerHTML = `<a class="fav-link" href="#/favorites" aria-label="Favorites, ${n} saved" title="Favorites">${heartIcon(n > 0)}<span class="fav-count">${n || ""}</span></a>
+    <div class="prefs">
       <button type="button" class="prefs-btn" aria-expanded="${wasOpen}" aria-controls="prefsPanel">
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
         ${em(4, EMO.ui.settings)}Display</button>
@@ -756,13 +1111,17 @@
         </fieldset>
         <fieldset>
           <legend>Celebrations</legend>
-          ${CELEB_MODES.map(m => `<label class="opt">
+          <p class="small muted legend-note">Pick a style. Each one plays a little differently every time. Previews run at half strength.</p>
+          <div class="style-grid">
+          ${CELEB_MODES.map(m => `<label class="opt opt-style${m.id === cm ? " is-on" : ""}">
             <input type="radio" name="celebrate" value="${m.id}" ${m.id === cm ? "checked" : ""}>
-            <span class="opt-text"><strong>${esc(m.name)}${m.id === "confetti" ? " (default)" : ""}</strong><span class="small muted">${esc(m.help)}</span></span>
+            <span class="opt-text"><strong>${showIcons && m.icon ? `<span class="emo" aria-hidden="true">${m.icon}</span>` : ""}${esc(m.name)}${m.id === "confetti" ? " (default)" : ""}</strong><span class="small muted">${esc(m.help)}</span></span>
           </label>`).join("")}
-          ${reduceMotion() ? `<p class="small muted">Your device asks for reduced motion, so confetti stays quiet.</p>` : ""}
-          <button type="button" class="btn" id="prefsTry">${em(2, "🎊")}Try a celebration</button>
+          </div>
+          ${reduceMotion() ? `<p class="small muted">Your device asks for reduced motion, so celebrations show a message without animation.</p>` : ""}
+          <button type="button" class="btn btn-preview" id="prefsTry" data-preview data-label="Preview at half strength" ${cm === "off" || cm === "quiet" ? "hidden" : ""}><span class="pv-label">Preview at half strength</span></button>
         </fieldset>
+        <p class="small prefs-foot"><a href="#/data">Your data &amp; backup</a> · saved in this browser only</p>
       </div>
     </div>`;
     const btn = slot.querySelector(".prefs-btn"), panel = slot.querySelector(".prefs-panel");
@@ -775,9 +1134,16 @@
     }));
     slot.querySelectorAll("input[name=celebrate]").forEach(r => r.addEventListener("change", () => {
       setPref("celebrate", r.value);
-      if (r.value !== "off") celebrate("test", {}, r);
+      slot.querySelectorAll(".opt-style").forEach(l => l.classList.toggle("is-on", l.contains(r)));
+      const tryBtn = slot.querySelector("#prefsTry");
+      tryBtn.hidden = r.value === "off" || r.value === "quiet";
+      // Picking a style previews it, unless a preview just played (then the button shows the countdown).
+      if (r.value === "quiet") toast("Celebrations will show a message, with nothing moving.");
+      else if (r.value === "off") toast("Celebrations are off.");
+      else previewCelebration(r.value, r.closest("label"));
     }));
-    slot.querySelector("#prefsTry").addEventListener("click", e => celebrate("test", {}, e.currentTarget));
+    wirePreviews(slot);
+    paintFavLink();
   }
   document.addEventListener("click", e => {
     const slot = document.getElementById("prefsSlot"), panel = slot && slot.querySelector(".prefs-panel");

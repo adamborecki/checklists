@@ -4,7 +4,7 @@ Live site: https://adamborecki.github.io/checklists/
 
 Research-linked checklists for music teachers: preschool, K–12, college, private studio, TAs, and administrators (chairs, area directors, deans, provosts, presidents).
 
-68 checklists in 18 categories, including health and wellness, English learners, autistic students, student safety, new faculty, and NASM accreditation.
+75 checklists in 18 categories, including health and wellness, English learners, autistic students, student safety, new faculty, and NASM accreditation. Filter by **what you're teaching** (private lessons, chamber and small ensembles, large ensembles, general music classes, lecture and academic classes) and **who it's for**.
 
 Every checklist has:
 
@@ -14,9 +14,11 @@ Every checklist has:
 - A **Sources** section with real, linked studies, laws, and guidelines
 - An **AI slop meter** (in each checklist's Review section) showing how much has been checked, by AI and by people
 - A **History** page with every prompt and change that made the site
-- **Emoji levels** and **celebrations** you control from the **Display** button
+- **Emoji levels** and **celebrations** (7 styles, or Surprise me) you control from the **Display** button
+- **Hearts** for a quick favorites list
+- A **Your data** page: everything is saved in this browser only, with export and import for backups
 
-> An AI (Claude) drafted all of this on 2026-10-22 and 2026-10-23. The first 47 checklists start at **85% slop** and the 21 newer ones at **93%**, because the AI already verified their sources. See [How the slop meter works](#how-the-slop-meter-works).
+> An AI (Claude) drafted all of this between 2026-10-22 and 2026-10-25. The first 47 checklists start at **85% slop**, and the 28 newer ones at **93%**, because the AI already verified their sources (links for 21 of them, claims for the other 7). See [How the slop meter works](#how-the-slop-meter-works).
 
 ## Run it
 
@@ -40,7 +42,7 @@ python3 -m http.server 8417
 index.html                    page shell
 css/style.css                 styles (light/dark, print, mobile)
 js/app.js                     app: routing, filters, checklists, slop meter, storage
-data/categories.js            categories, audiences ("I'm a…"), evidence labels, their emoji
+data/categories.js            categories, audiences ("Who it's for"), teaching settings ("What you're teaching"), evidence labels
 data/emoji.js                 emoji levels, UI emoji, item keyword → emoji map, confetti glyphs
 data/sources.js               the source library (every citation lives here once)
 data/checklists-*.js          the checklists, grouped by area
@@ -62,9 +64,29 @@ The **Display** button in the header has two settings, saved in this browser:
 
 Emoji are decorative (`aria-hidden`), so screen readers skip them. Each checklist sets its own with `emoji: "🎻"`. The keyword map that picks item emoji lives in `data/emoji.js`.
 
-**Celebrations** fire on your first checked box, the halfway point, finishing a checklist, lowering a checklist's slop band, and reaching 0% slop. Modes: **Confetti** (default), **Quiet** (a message, nothing moves), or **Off**. If the device asks for reduced motion, confetti is skipped automatically.
+**Celebrations** fire on your first checked box, the halfway point, finishing a checklist, lowering a checklist's slop band, and reaching 0% slop. Pick a style:
 
-To add a celebration, add a key to `CELEBRATIONS` in `js/app.js` and call `celebrate("key", data, originElement)`.
+| Style | What it does (re-rolled every time) |
+|---|---|
+| Confetti (default) | Burst from where you clicked; big wins add side cannons. Random palette, shapes, tilt, spread. |
+| Fireworks | Rockets launch and burst: sphere, ring, double, willow, or crossette. |
+| Balloons | A bunch floats up with swaying strings. |
+| Music notes | ♪ ♫ ♬ drift up and sway (🎵 🎶 at higher emoji levels). |
+| Sparkles | Twinkling starbursts in rings, plus stray sparkles for big wins. |
+| Confetti shower | Paper and streamers fall from the top, blown by a random wind. |
+| Bubbles | Bubbles wobble up and pop. |
+| Surprise me | A different style each time, never the same twice in a row. |
+| Quiet / Off | Just the message, or nothing. |
+
+Six palettes (theme, bright, pastel, gold, neon, marching band) are picked at random, and messages rotate. Previews play at **half strength** with a **3.5-second cooldown** (the button shows a countdown). Real celebrations aren't throttled. With reduced motion turned on, only the message shows.
+
+Events live in `CELEBRATIONS` in `js/app.js` (call `celebrate("key", data, originElement)`); styles live in `EFFECTS`.
+
+## Favorites and Your data
+
+Tap the heart on any checklist to save it. The heart in the header opens your favorites (`#/favorites`).
+
+There's no account. Checkmarks, favorites, reviews, source checks, and display settings are saved in **this browser on this device only**. The **Your data** page (`#/data`, linked in the footer and the Display menu) shows what's saved, exports a backup file, imports one (it merges, deleting nothing), and clears everything.
 
 ## How the slop meter works
 
@@ -97,11 +119,13 @@ Reviews are saved in **localStorage** (this browser only). To make a review perm
 3. For links you opened, add `humanLinkCheck: "initials, YYYY-MM-DD"` to the source in `data/sources.js`.
 4. Commit. Everyone now sees the lower slop.
 
-You can also **Export** all your reviews and checks as JSON from the About page, and **Import** someone else's.
+You can also **Export** all your reviews, checks, and favorites as JSON from the **Your data** page, and **Import** someone else's.
 
 ## What the AI did and didn't verify
 
 **Sources added 2026-10-23** (the 21 newest checklists): Crossref and doi.org were unreachable from the drafting environment, so these were first checked by **web search only**. Titles, authors, journals, volumes, and pages matched search results. Later that day, all 147 sources were re-checked with `tools/check-links.mjs` from a machine that could reach Crossref. Every DOI resolved, including the three the cloud session couldn't confirm (`boice1989`, `milton2012`, `paruthi2016`). Claims in these 21 haven't been matched to their sources yet. NASM details (BM percentages, HEADS dates, the May 1 Code of Ethics rule) came from NASM pages and copies of past Handbooks, not a full read of the 2025–26 Handbook. Run `node tools/check-links.mjs` before trusting them.
+
+**Sources added 2026-10-25** (11 sources for the 7 lesson, chamber, and lecture-class checklists in `data/checklists-settings.js`): again checked by **web search only** from the cloud session. Claims were written to match abstracts and summaries found by search (`claims: "drafter"`), but links haven't been resolved by a live check (`links: false`), so these 7 also start at 93%. `davidsonGood2002` links to the journal issue, because its DOI and page numbers weren't confirmed. Run `node tools/check-links.mjs` from a machine that can reach Crossref.
 
 **Sources from 2026-10-22:**
 
@@ -123,6 +147,7 @@ Each checklist is a plain object:
   id: "unique-slug",
   title: "Doing the thing",
   emoji: "🎻",                         // shown depending on the viewer's emoji level
+  fmt: ["small", "large"],             // settings from MTC_FORMATS; omit for role-only checklists
   cat: "rehearsal",                    // id from data/categories.js
   aud: ["secondary", "college"],       // audiences from data/categories.js
   tags: ["choir", "pacing"],

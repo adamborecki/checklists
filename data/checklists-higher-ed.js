@@ -9,6 +9,7 @@
   id: "ta-first-semester",
   title: "TA: your first semester teaching",
   emoji: "📝",
+  fmt: ["lecture"],
   cat: "higher", aud: ["ta", "college"], tags: ["TA", "FERPA", "Title IX", "active learning", "boundaries"],
   evidence: "mixed",
   ai: { links: true, claims: "drafter", note: "Sources resolved via Crossref and live URLs; claims written to match abstracts (2026-10-22)." },

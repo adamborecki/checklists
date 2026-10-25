@@ -644,5 +644,53 @@ window.MTC_SOURCES = {
   idra2025: {
     cite: "Craven, M. (2025, October 9). Still Required: Protecting English Learners in Our Schools. IDRA (on the August 2025 rescission of the 2015 federal EL guidance, and the obligations under Title VI, Lau, and the EEOA that remain).",
     url: "https://www.idra.org/resource-center/still-required-protecting-english-learners-in-our-schools/", kind: "article"
+  },
+  // ---------- Added 2026-10-25: lessons, chamber groups, lecture classes ----------
+  // Checked by web search only (Crossref unreachable from the cloud session). Titles,
+  // journals, and pages matched search results; DOIs below also appeared in results
+  // unless marked. Run tools/check-links.mjs to resolve them.
+  dukeSimmons2006: {
+    cite: "Duke, R. A., & Simmons, A. L. (2006). The nature of expertise: Narrative descriptions of 19 common elements observed in the lessons of three renowned artist-teachers. Bulletin of the Council for Research in Music Education, 170, 7–19.",
+    url: "https://cml.music.utexas.edu/online-resources/the-nature-of-expertise", kind: "study"
+  },
+  gaunt2008: {
+    cite: "Gaunt, H. (2008). One-to-one tuition in a conservatoire: The perceptions of instrumental and vocal teachers. Psychology of Music, 36(2), 215–245.",
+    url: "https://doi.org/10.1177/0305735607080827", kind: "study"
+  },
+  davidsonGood2002: {
+    cite: "Davidson, J. W., & Good, J. M. M. (2002). Social and musical co-ordination between members of a string quartet: An exploratory study. Psychology of Music, 30(2). (Page numbers not confirmed; link goes to the issue.)",
+    url: "https://journals.sagepub.com/toc/poma/30/2", kind: "study"
+  },
+  roediger2006: {
+    cite: "Roediger, H. L., & Karpicke, J. D. (2006). Test-enhanced learning: Taking memory tests improves long-term retention. Psychological Science, 17(3), 249–255.",
+    url: "https://doi.org/10.1111/j.1467-9280.2006.01693.x", kind: "study"
+  },
+  adesope2017: {
+    cite: "Adesope, O. O., Trevisan, D. A., & Sundararajan, N. (2017). Rethinking the use of tests: A meta-analysis of practice testing. Review of Educational Research, 87(3), 659–701.",
+    url: "https://doi.org/10.3102/0034654316689306", kind: "meta-analysis"
+  },
+  cepeda2006: {
+    cite: "Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. Psychological Bulletin, 132(3), 354–380.",
+    url: "https://doi.org/10.1037/0033-2909.132.3.354", kind: "meta-analysis"
+  },
+  dunlosky2013: {
+    cite: "Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., & Willingham, D. T. (2013). Improving students' learning with effective learning techniques: Promising directions from cognitive and educational psychology. Psychological Science in the Public Interest, 14(1), 4–58.",
+    url: "https://doi.org/10.1177/1529100612453266", kind: "review"
+  },
+  deslauriers2019: {
+    cite: "Deslauriers, L., McCarty, L. S., Miller, K., Callaghan, K., & Kestin, G. (2019). Measuring actual learning versus feeling of learning in response to being actively engaged in the classroom. PNAS, 116(39), 19251–19257.",
+    url: "https://doi.org/10.1073/pnas.1821936116", kind: "study"
+  },
+  crouch2001: {
+    cite: "Crouch, C. H., & Mazur, E. (2001). Peer Instruction: Ten years of experience and results. American Journal of Physics, 69(9), 970–977.",
+    url: "https://doi.org/10.1119/1.1374249", kind: "study"
+  },
+  hattie2007: {
+    cite: "Hattie, J., & Timperley, H. (2007). The power of feedback. Review of Educational Research, 77(1), 81–112.",
+    url: "https://doi.org/10.3102/003465430298487", kind: "review"
+  },
+  wisniewski2020: {
+    cite: "Wisniewski, B., Zierer, K., & Hattie, J. (2020). The power of feedback revisited: A meta-analysis of educational feedback research. Frontiers in Psychology, 10, 3087.",
+    url: "https://doi.org/10.3389/fpsyg.2019.03087", kind: "meta-analysis"
   }
 };

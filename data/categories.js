@@ -31,6 +31,16 @@ window.MTC_AUDIENCES = [
   { id: "admin",      emoji: "💼", name: "Administrators" }
 ];
 
+/* "What are you teaching?" filters: the setting a checklist is for. A checklist lists
+   every setting it fits in  fmt: [...]. Role-only checklists (meetings, NASM) have none. */
+window.MTC_FORMATS = [
+  { id: "lessons", emoji: "🧑‍🏫", name: "Private lessons" },
+  { id: "small",   emoji: "🎻", name: "Chamber & small ensembles" },
+  { id: "large",   emoji: "🎺", name: "Large ensembles" },
+  { id: "general", emoji: "🥁", name: "General music classes" },
+  { id: "lecture", emoji: "📖", name: "Lecture & academic classes" }
+];
+
 /* How strong the evidence behind a checklist is, as the AI drafter judged it. */
 window.MTC_EVIDENCE = {
   research: { name: "Research-backed",     help: "Most items trace to peer-reviewed studies or meta-analyses." },

@@ -62,8 +62,8 @@ window.MTC_HISTORY = [
     date: "2026-10-23", time: "1:11 AM PT",
     who: "Adam", agent: "Claude Opus 5.5 · Claude Code on the web (cloud session)",
     title: "21 more checklists, emoji levels, and celebrations",
-    summary: "A separate cloud session expanded the site. The prompt text lives in that session, not here. The summary below comes from its commit message.",
-    promptNote: "Not copied here. Open the cloud session to read the original prompt.",
+    summary: "Said the site was good now and asked for more, much more: research NASM standards, health and wellness, a first time at a new university, a student who is slightly on the spectrum, a student with a stalker from a different school, and ESL students at different levels. Add an emoji setting from \"None whatsoever\" to \"there's no such thing as too many,\" with tactful as the default. Add some celebrations now, ahead of a fuller version later. No questions needed.",
+    prompt: "It’s good now. Make it better with more more and more, maybe research NASM standards and health and wellness and first time at a new university and how to deal with a student who is slightly on the spectrum and how to deal with a situation where a student has a stalker who goes to a different school and how to best work with ESL students at different levels. Add an emoji feature where you can adjust levels of emojis from None whatsoever to barely any to tactful (default) to plenty to there’s no such thing as too many emojis. Later we’ll implement celebrations. Might as well add some now take your time. You don’t need to ask me questions ? LMK",
     did: [
       "Added 21 checklists: NASM accreditation (basics, self-study and site visit, health and safety, degree design, annual obligations), health and wellness (playing-related injury, student wellness, teacher wellness, marching band heat safety), first-year faculty, first-year music majors, autistic students, sensory-friendly concerts, a student being stalked, concert and online privacy, English learners by level, newcomers, multilingual families, international students, grieving students, and celebrating student wins.",
       "Added a Display menu with five emoji levels (from 'None whatsoever' to 'There's no such thing as too many') and celebrations (confetti, quiet, or off) that respect reduced-motion settings.",
@@ -91,5 +91,26 @@ window.MTC_HISTORY = [
       "Added this History page."
     ],
     commits: ["b701f2a"]
+  },
+  {
+    id: "celebrations-favorites",
+    date: "2026-10-25",
+    who: "Adam", agent: "Claude · Claude Code on the web (same cloud session as entry 4)",
+    title: "Celebration styles, favorites, a teaching-setting filter, and Your data",
+    summary: "Asked to add this conversation to the History page; expand celebrations to 6 or 7 styles plus a random option, each with noticeable randomness; consider a 3–4 second cooldown between previews and half-strength previews; fix the \"I'm a…\" label, whose grammar didn't fit the buttons; add a filter for private lessons vs. small or large ensembles vs. lecture classes, with research so each has plenty; add hearts for a quick favorites list; explain browser-only storage simply; and answer how the AI slop meter changes and whether reviews can be exported.",
+    prompt: "See how there’s now a history tab on the thing? Add this conversation to it. Also elaborate on celebrations, maybe like 6 or 7 to choose from ? 😭🤣🤣  - and a random option. For all celebrations; within each you choose , make sure there’s some noticeable randomization for each so it’s not always the same. What do you think about making it so that when you pick a celebration and try it out there’s like a 3 or 4 second cool down before you can try the next one? Overthinking it?  Maybe the previews are like at 50% intensity of what the real thing is too? Seems kinda nice… also the thing says “I’m a…” but grammar doesn’t work for what buttons are u know? Also I think we should maybe have some sort of filter for if you’re teaching private instruction (lessons) vs an ensemble (small or large) vs lecture classes … go out and do research to make sure there’s plenty there. Also add a heart feature so you can have a quick list of favorites - idk how fussy we need to be about educating the user about localstorage (ie no account not saved anywhere except on this browser on this device, maybe an export option later but keep it simple for now  - in fact how does one change the ai slop meter? It’s by human review but does that get saved in localstorage and ready to export? Perhaps an export feature now is essential) I know I’m asking you way too many things in 1 prompt, but I know you’re Opus 5.5 and I think you can handle it",
+    did: [
+      "Added this entry, and filled in entry 4's prompt word for word, since this cloud session still had it.",
+      "Rebuilt celebrations as 7 styles (confetti, fireworks, balloons, music notes, sparkles, confetti shower, bubbles) plus Surprise me, Quiet, and Off. Each play re-rolls its palette (six palettes), shapes, angles, burst patterns, wind, and timing, and the messages rotate too. Surprise me never repeats the previous style.",
+      "Previews play at half strength with a 3.5-second cooldown. The Preview button shows a countdown and a shrinking bar, so the wait reads as deliberate rather than broken. Real celebrations aren't throttled.",
+      "Fixed a bug found while testing: firework bursts were created mid-update and silently dropped, so fireworks showed only rocket trails.",
+      "Replaced \"I'm a…\" with two labeled rows: \"What you're teaching:\" (private lessons, chamber and small ensembles, large ensembles, general music classes, lecture and academic classes) and \"Who it's for:\". Tagged all 68 existing checklists with the settings they fit.",
+      "Researched and wrote 7 new checklists so every setting has at least 15: a great weekly lesson, teaching lessons online, helping a chamber group rehearse without you, teaching theory and aural skills so it sticks, running a big lecture class, quizzes that help students learn, and feedback students can use. 11 new sources (Duke & Simmons, Gaunt, Davidson & Good, Roediger & Karpicke, Adesope, Cepeda, Dunlosky, Deslauriers, Crouch & Mazur, Hattie & Timperley, Wisniewski). Crossref was unreachable again, so these were checked by web search only; their slop starts at 93%.",
+      "Added hearts on every checklist, a favorites count in the header, and a Favorites page. Hearts are drawn as SVG, so they still show at \"None whatsoever\".",
+      "Answered the slop-meter question with a new Your data page: no account, saved only in this browser on this device. It shows what's saved, exports and imports a backup (checkmarks, favorites, reviews, source checks, settings), and explains that a review lowers the meter only locally until it's added to the site's data or sent to Adam or Billy.",
+      "Tested in a real browser: all styles, random, cooldown, hearts, filters, export, phone width, and \"None whatsoever\", with no console errors."
+    ],
+    commits: [],
+    links: [{ label: "Cloud session (opens for Adam's account)", url: "https://claude.ai/code/session_01Bpu9Zb55HmB56Ubo5ALK31" }]
   }
 ];
