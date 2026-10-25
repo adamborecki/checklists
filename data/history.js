@@ -110,7 +110,7 @@ window.MTC_HISTORY = [
       "Answered the slop-meter question with a new Your data page: no account, saved only in this browser on this device. It shows what's saved, exports and imports a backup (checkmarks, favorites, reviews, source checks, settings), and explains that a review lowers the meter only locally until it's added to the site's data or sent to Adam or Billy.",
       "Tested in a real browser: all styles, random, cooldown, hearts, filters, export, phone width, and \"None whatsoever\", with no console errors."
     ],
-    commits: [],
+    commits: ["37ee953"],
     links: [{ label: "Cloud session (opens for Adam's account)", url: "https://claude.ai/code/session_01Bpu9Zb55HmB56Ubo5ALK31" }]
   }
 ];
